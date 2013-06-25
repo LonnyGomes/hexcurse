@@ -1,0 +1,101 @@
+Current version: hexcurse 1.55 (12.22.2003)
+ * Fixed file-saving bug which would not allow some changes to be saved to file
+
+hexcurse 1.54 (06.06.2002)
+ * Added a feature that highlights the respective location of the value
+   currently under the cursor in the opposite window
+ * Fixed a rare division by zero problem
+ * Added the ctrl+b key mapping for the End key that mysteriously was left out
+   of the last release
+ * Fixed a problem with the End key where the cursor wouldn't go to the end of
+   the file if it was on a certain line(s)
+
+hexcurse 1.50.1 (05.29.2002)
+-= The following was found  by Christian <naddy@openbsd.org> =-
+ * Due to a problem with Makefile.am, the CFLAGS variable wasn't being
+   honored (in order to release an OpenBSD port)
+
+hexcurse 1.50 (05.28.2002)
+ * Mapped the Home and End keys to goto the beginning and end of the file 
+   respectively
+ * Modified the search prompt to display when it's searching
+ * Fixed a problem where if the hex data didn't fill the entire screen hitting
+   F6 or ctrl+a would still print out entire coloumn of address values
+ * Enabled the use of the escape key to cancel the prompt for opening, saving,
+   finding and jumping to different locations in the file
+ * Converted some str funtions to their strn equivalent functions
+ * Fixed problem with scroll bar
+ * Added a feature where if the window dimensions are too small, the screen
+   isn't redrawn until it's resized to an axxeptable size
+ * Added window resizing support
+
+ -= The following was submitted by Ted <ted@php.net> =-
+ * Added EBCDIC support for machines that use that rather than ASCII
+ 
+ -= The following was submitted by Claudio <claudio.fanin@pd.infn.it> =-
+ * Fixed a problem where the proprietary SGI compiler couldn't compile the code
+
+hexcurse 1.40 (03.20.2002)
+ * Changed several integers to type long for systems where sizeof(int) <= 2
+ * Modified layout so it will fill the whole terminal (major improvement!)
+ * Modified command line so -i need not be specified - the last argument (if
+   exists) will be the input file (overriding any specified with -i)
+ * Added a prompt when exiting hexcurse after modifying a file
+ * Added the -r option to resize the window width to a specified number of
+   characters
+ * Added the -a option to automatically specify decimal addressing
+ * Added pop up windows for error messages
+ * Fixed a bug that made hexcurse core dump when searching while a
+   file was not loaded (Ctrl+F). Another thanks to monachus for pointing it out
+ * Fixed backspacing problems in input prompts
+ * Fixed output saying CTRL+H brought up help (CTRL+? does instead)
+ * Fixed a bug with scrolling and misplaced offsets
+ * Optimized help windows to be much more efficient
+ * Optimized the window refreshing
+ * New versioning system (easier to track number of fixes)
+
+ -= The following were submitted by Blake <matheny@dbaseiv.net> =-
+ * Changed VERSION to HVERSION due to conflicts with a recent glibc macro
+ * Implemented hgetopt() (a hack of glibc's getopt())
+ * Fixed any command line parsing issues with OS's that have other libc's
+
+ -= The following was submitted by Michael <MichaelARice@adelphia.net> =-
+ * Fixed a malloc bug when compiled in IRIX (change to calloc())
+
+hexcurse v1.22 (01.23.2002)
+ * Added the key mapping of Quit to ctrl+q (in addition to ctrl+x)
+ * Fixed a problem where hexcurse would segfault when ctrl+q was pressed
+   A thanks to Monachus for pointing out the problem
+ * Fixed a logic bug which made it impossible to view the help screen
+ * Fixed a few places where pointers weren't handled correctly
+ * Updated the man page, fixed some spelling errors
+
+hexcurse v1.21 (07.12.2001)
+ * Fixed a bug where the search feature did not work in the last release
+ * Fixed a problem where the search function would not find modified values
+ * Made the search function more user friendly
+
+hexcurse v1.2 (07.04.2001)
+ * Added an undo function (CTRL+Z)
+ * Added a feature that shows every modified byte in bold
+ * Made help and man page more verbose
+ * Fixed an error in the insertItem function that incorrectly sorted the items
+   in the linked list
+ * Modified the "goto" functions so if the destination of the search is visible
+   on the current screen it will no longer scroll
+ * Fixed a mistake where "hexdump" was outputed rather than "hexcurse"
+ * Fixed a cosmetic bug that would output incorrect things in the menu at the
+   bottom of the screen
+
+hexcurse v1.01 (05.21.2001)
+ * Added support for compilation under IRIX
+ * Added CTRL+D and CTRL+U in the event that pgup+pgdn don't work
+ * Fix problem where non-gcc compilers didn't recognize the C++ style // comment
+ * Made the man page more verbose
+ * Rearranged the menu commands into a more convenient arrangement
+ * Fixed an error in the help print out
+ * Fixed CTRL redefinition warning
+ * Fixed a problem where the last column was not updated
+
+hexcurse v1.0 (05.18.2001)
+ * First release

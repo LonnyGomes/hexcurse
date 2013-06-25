@@ -1,0 +1,41 @@
+=====================================
+hexcurse v1.55
+=====================================
+Authors: armoth <uknowho@n0mansland.net> and jewfish <jewfish@jewfish.net>
+Bug reports: devel@jewfish.net
+
+
+Description:
+============
+This is a curses-base hex editing utility that can open, edit, and
+save files, editing both the hexadecimal and decimal values.
+
+
+Requirements:
+=============
+You must have the ncurses development libraries (version 5+) to compile this program
+
+
+Installation:
+=============
+To install do the following
+
+./configure
+make
+make install
+
+
+License information:
+====================
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+version 2 as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details, in COPYING file.
+
+If you have not received a copy of this file along with this program, write to
+the Free Software Foundation, Inc.,
+59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.

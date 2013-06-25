@@ -1,0 +1,1 @@
+Irix stores man pages differently then many other operation systems.  By default the man page is stored into /usr/local/man/man1 rather then the correct directory /usr/share/catman/a_man/cat1
