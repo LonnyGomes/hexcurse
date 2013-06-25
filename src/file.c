@@ -253,6 +253,7 @@ int hexSearch(FILE *fp, int ch[], int startfp, int length)
 		    break;
 		    
 	    }
+		fseek(fp, startLoc, SEEK_SET);
 
 	    if ((loop == length) && (flag))		/* if found it        */
 		return startLoc - 1;			/* return location    */
