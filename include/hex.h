@@ -103,7 +103,7 @@ extern char EBCDIC[256];
 #define MIN_COLS        70                      /* screen has to be 70< cols  */
 #define MIN_LINES       7     /* 8 - 1 */       /* the slk crap minuses 1 line*/
 #define KEY_TAB 		9			/* value for the tab key      */
-#define FN_LEN			80
+#define FN_LEN			255
 
 #define AlphabetSize (UCHAR_MAX +1)		/* for portability            */
 
