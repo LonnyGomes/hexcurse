@@ -1,64 +1,9 @@
-This hexeditor was writen by jewfish and armoth
+This hexeditor was writen by James Stephenson and Lonny Gomes
 Contact Info
 ------------
-jewfish 
-	e-mail: jewfish@jewfish.net
-	IM:	jewf1sh
-	GPG Key:
------BEGIN PGP PUBLIC KEY BLOCK-----
-Version: GnuPG v1.0.6 (GNU/Linux)
-Comment: For info see http://www.gnupg.org
+James Stephenson
+	Google+: https://plus.google.com/u/0/103174459258175070784/about
 
-mQGiBDv0mW0RBADrbqXsbjfo27iE5eFJS1ZQIo11WlAzFDHwgijZ7Wp80UDj7jPe
-ZAhK1Z8Oe7OwYP/c+gm/RYqAIXvRWswuTjMB8OSQGJXOPr4vfayJomU7oy3CcQjq
-mcPAs2ho0Q7Iv1cNie/ytbwMSXwIf7YB7ZeoMP1Tvfl90FxFKYd7oaHxjQCg/xlW
-2zJML7R2VMB62i//vfHX+iUD/0S55zWUB2oCio8zCNywd2HPlR6+cpvFOXkHIVng
-uyMgNF9ZGB0AqTJ0loSTGKNAfranUPg2ye7fb3Qna1kQ51B77wke77lwTYS2T0sE
-Rd5Ei5CzRT4Zl+7KVpGy0kh1YVdVuzbHEvlS/3r81V/GggayJPLe4nwPLl3SCbe7
-C6IQA/9iQ/j+dHsLSN88vKRJbbNYo7WMa4aTiiJnRKTxDLTNCpP5fZ6/VyyL5u1A
-3T4dgixqsaQ9TOpKmzbpsM7pC9VSaW0AQtLEtLjMS8/qbsS9hUwOjwJ7Zn9QH55y
-lhKHC6UF9sLl49fD3ul3/oLqc1jlYm+DAU03im2SSoa32qywYbQdamV3ZmlzaCA8
-amV3ZmlzaEBqZXdmaXNoLm5ldD6ISwQQEQIACwUCO/SZbQQLAwECAAoJEDjvZ2EK
-amhexm0An0n73Dfxn8Y5tFGqUW3n/3sRDau9AJ9rFM4cjuC4Irl21YPCxiMRjLzK
-1YhGBBARAgAGBQI79KQtAAoJEPKIKO1rSHK1DVcAn3yjLQRkBQvk94tRjZsQY1b4
-UlKUAKDXtTbiP5u060NM3nWsHHyp46z4nbkBDQQ79Jl0EAQA+FCpaRQZZm25B5U1
-042pc3XorvoVGmusAtKR95Jstkvx81QXFR5kC7ciiTXZK2wwPZCNgZZzO+hiRspM
-oiuMfhS6lMHOk+gO6ExelJLKCjVzBCwXUTLNjpKPsAP2CcoT8temCFH+EJyyjYI+
-+HT+fbYbwnKPfQbvyXHG5qAE1P8AAgIEAMQxaaPH/SaCkkyC5uJoZSDy2JSz/pw8
-8A3TwcbMnchSGN4MNCd1I3Z0sf3aBJilDWTGLlHYKPC4sEiyZV5chYbHhfBZecS+
-1RmqlrKEiPTKnhmd0J23Tg6zyVXUCTSH7vqIYv2sa3gRMenTvF7kiCG2hmq+mtU1
-YvqcUPtAKtsKiD8DBRg79Jl0OO9nYQpqaF4RAkgtAJ49UvTvRsYw+QqkRSebSbga
-OpcyEACgnwmteDPMhkD5x5IjwCkHD+SPdAg=
-=8+XQ
------END PGP PUBLIC KEY BLOCK-----
-
-armoth
-	e-mail: uknowho@n0mansland.net
-	IM:	UkNOWh0
-	GPG Key:
------BEGIN PGP PUBLIC KEY BLOCK-----
-Version: GnuPG v1.0.6 (GNU/Linux)
-Comment: For info see http://www.gnupg.org
-
-mQGiBDtnZ4gRBADLM5fbOGn+E5zazvyX54/2MJPQRKj7Xy5NUPM4c3GQCRwjmLjv
-c4GxzE/RmOaEKc7s9SVJZFD0qRFSS31ALo44lHXBmTYuD8kOcmP876yPLfLR482v
-x6rlXm+JrfTQfdOEQ1eShJyIBsNeo9f7vw6CFvysDs5Ge0FEt91d0ldIrwCg6POg
-/9zJF5NWjr5C+r1/Z8FT+UED/RYCc0qW3yYi5p9dHsgY0WsACp9NU7G3C8YyBVUY
-QaR4mIIpYiVfgcdw+DyGNwSGPp7j3F+VCt0w1VzdjCdySJIsLzEBFTDhpZ6c/S4+
-QfBPJPqV6FWMt/RBhDQBpg7gKxNlXpFkTHRIB9AM75ZMc669LnNuiTVENO7/7sdU
-xpw9A/9MNuPhdDp1oY+4TMEM0571uCEbceXaK+7c/NwLn+xM2K3j1gBHVZjeuR7W
-sRPjVljP3m7tNX0Et9CzLozP8ac8LANOR9JpvI9wNJoxdr0Ao3KmduL/uAOHR9nI
-x0mp+zo2364U0/vXmUobkUzLD5Wbf+dXERXNm+UXjr7Mf/Ah27QgdWtub3dobyA8
-dWtub3dob0BuMG1hbnNsYW5kLm5ldD6IVwQTEQIAFwUCO2dniAULBwoDBAMVAwID
-FgIBAheAAAoJEPKIKO1rSHK1eZIAoOGfoPc1ZuuCkSQP4jFNjlJhETz4AKCMDhkg
-CaKdPVyyd9HQXr77bNSiALkBDQQ7Z2ePEAQA2V4UxbSKbL1hZcg0yVesNF4zE4dQ
-7UZXiOdh4lOGVqMbkXSHGEZZnJD8zZU1Mfax3U7lYY2WQiy8PHksqEw7+SPcnsZF
-xMw5neWyVK7OhRAeTfy0UgYOWNef09CZy/R9U5Qd9/lq9l8I/y4dTOZcMF1xkuqF
-qjcIEHhlCRb59EcAAwcD/jTjrt0aJcYUxqdtFLaR6RqP38FrHH6dKEZRrPNb08fV
-XjP1VsgDKcxhdTw/JPzG9ZMV/nO7fWwOPlbGlFIIbAmQptwVrtaMw30+oZFz/WS5
-twlrNhJMMFezNhNOaolx0KkEBATJ3we1zkTUswcnjIrC2XZlNm6/VfCbN0ocAmPo
-iEYEGBECAAYFAjtnZ48ACgkQ8ogo7WtIcrWuDACgku+5fV13Oz4ZAKOHQFmWVYjx
-Tt0AmwaOO/Sp0xIfNLEPRXcouZmjWJNG
-=fmZG
------END PGP PUBLIC KEY BLOCK-----
-
+Lonny Gomes
+    e-mail: hexcurse dot lonnygomes dot com
+	twitter: @lonnygomes
