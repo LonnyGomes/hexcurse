@@ -23,26 +23,29 @@
  *		interprets it.				*
  * Returns:	retval (if quit program or no)		*
 \********************************************************/
-long maxlines;						/*extern val for lines*/
-long currentLine;					/*extern val for lines*/
-long LastLoc;                                           /*last cursor location*/
+off_t maxlines;						/*extern val for lines*/
+off_t currentLine;					/*extern val for lines*/
+off_t LastLoc;                                          /*last cursor location*/
 bool editHex;						/* flag to edit h or a*/
 int SIZE_CH;                                            /* global winch flag  */
 
 int wacceptch(WINS *win, long len, char *fpINfilename, char *fpOUTfilename)
 {
-    int  row = 0, col = 0, count,  val, tmpval, 	/* counters, etc.     */
+    intmax_t tmp_max;
+    
+    off_t count;
+    int  row = 0, col = 0, val, tmpval, 	        /* counters, etc.     */   
          ch[17],					/* holds search string*/
 	 eol = (BASE * 3) - 1,				/* end of line pos    */
          save = 0,					/* to save on exit    */
 	 lastRow = 0, lastCol = 0,			/* last row/col coords*/
-	 prevVal, curVal,				/* vals @ cursor locs */
-	 tmp;
+	 curVal = 0,	        			/* vals @ cursor locs */
+	 tmp = 0;
 
-    long cl,						/* current loc in file*/
-	 gotoLoc = 0,					/* goto location      */
-	 lastLine = 0,					/* line b4 LastLine   */
-	 currentLine = 0;				/* current line value */
+    off_t cl,						/* current loc in file*/
+	  gotoLoc = 0,					/* goto location      */
+	  lastLine = 0,					/* line b4 LastLine   */
+	  currentLine = 0;				/* current line value */
 
     char *gotoLocStr,					/* convert to gotoLoc */
          *temp,
@@ -65,15 +68,18 @@ int wacceptch(WINS *win, long len, char *fpINfilename, char *fpOUTfilename)
 
     if (fpIN)						/* if file opened then*/
     {							/* highlight 0,0 loc  */
-        prevVal = curVal = getLocVal(0);
+        curVal = getLocVal(0);
 	wattron(win->ascii, A_UNDERLINE);
-	mvwprintw(win->ascii, 0, 0, "%c", curVal); 
+	if (USE_EBCDIC)
+		mvwprintw(windows->ascii, 0, 0, "%c", EBCDIC[curVal]);/* print EBCDIC char */
+	else	/* print ASCII  char */
+		mvwprintw(windows->ascii, 0, 0, (isprint(curVal)) ? "%c":".", (char)curVal);
 	wmove(win->hex, 0, 0);
 	wattrset(win->ascii, A_NORMAL);
     	wnoutrefresh(win->ascii);
 	doupdate();
     }
-
+        
 							/* get keys til exit  */
     while (!(save=quitProgram(isEmptyStack(stack),(key = wgetch(Winds)))))
     {
@@ -160,7 +166,7 @@ int wacceptch(WINS *win, long len, char *fpINfilename, char *fpOUTfilename)
 							/* if not in ll...    */
 			if ((val = searchList(head, cl)) == -1)
 		  	{
-			    fseek(fpIN, cl, SEEK_SET);	/* get val from file  */
+			    fseeko(fpIN, cl, SEEK_SET);	/* get val from file  */
 			    val = fgetc(fpIN);
 			}
 
@@ -351,7 +357,7 @@ int wacceptch(WINS *win, long len, char *fpINfilename, char *fpOUTfilename)
 		     maxLines(maxLoc(fpIN)); count++)
 		    outline(fpIN, count);
 
-		mvwprintw(windows->cur_address, 0, 0, "00000000"); 
+		mvwprintw(windows->cur_address, 0, 0, "%0*d", MIN_ADDR_LENGTH, 0); 
 		wmove((editHex) ? win->hex : win->ascii, 0, 0);
     		wnoutrefresh(win->ascii);
     		wnoutrefresh(win->address);
@@ -387,8 +393,10 @@ int wacceptch(WINS *win, long len, char *fpINfilename, char *fpOUTfilename)
 		if (openfile(win, fpINfilename))	/* open file          */
 		{
 		    if (fpIN)
-			prevVal = curVal = getLocVal(0);
-
+                    {
+			MIN_ADDR_LENGTH = getMinimumAddressLength(maxLoc(fpIN));
+			curVal = getLocVal(0);
+                    }                
 	 	    return TRUE;			/* TRUE if worked     */
 		}
 		break;
@@ -522,12 +530,12 @@ int wacceptch(WINS *win, long len, char *fpINfilename, char *fpOUTfilename)
 		/* check to see if screen is filled     */
 		if ((maxlines - row) < MAXY)
 		    for(count = 0; count <= (maxlines - row); count++)
-			wprintw(win->address, (printHex) ? "%08X ":"%08d ",
-			       (count + row) * BASE);
+			wprintw(win->address, (printHex) ? "%0*jX ":"%0*jd ",
+			       MIN_ADDR_LENGTH, (intmax_t)((count + row) * BASE));
 		else
 		    for(count = 0; count <= MAXY && count <= maxlines ; count++)
-			wprintw(win->address, (printHex) ? "%08X ":"%08d ",
-			       (count + row) * BASE);
+			wprintw(win->address, (printHex) ? "%0*jX ":"%0*jd ",
+			       MIN_ADDR_LENGTH, (intmax_t)((count + row) * BASE));
 
 							/* update menu button */
 		slk_set(6, (printHex) ? "Hex Addr":"Dec Addr", 1);
@@ -551,8 +559,12 @@ int wacceptch(WINS *win, long len, char *fpINfilename, char *fpOUTfilename)
 		    wrefresh(win->hex_outline);
 		    break;
 		}
-
-		gotoLoc = strtol(gotoLocStr, NULL, 16); /* convert str 2 hex  */
+                
+                /* convert str to number */
+                if (sscanf(gotoLocStr, printHex ? "%jX" : "%jd", &tmp_max) != 1)
+                    tmp_max = 0;
+                    
+                gotoLoc = (off_t)tmp_max;
 		/*wscanw(win->hex_outline, (printHex) ? "%X":"%d",&gotoLoc);  */
 		noecho();				/* disable echoing    */
 
@@ -747,8 +759,8 @@ int wacceptch(WINS *win, long len, char *fpINfilename, char *fpOUTfilename)
 	LastLoc = cursorLoc(currentLine, col, editHex, BASE);
 	lastLine = currentLine;
 							/* print cur location */
-	mvwprintw(win->cur_address, 0, 0, (printHex) ? "%08X":"%08d",
-	   	  cursorLoc(currentLine, col, editHex,BASE));
+	mvwprintw(win->cur_address, 0, 0, (printHex) ? "%0*jX":"%0*jd",
+	   	  MIN_ADDR_LENGTH, (intmax_t)cursorLoc(currentLine, col, editHex,BASE));
 	
 	wnoutrefresh(win->cur_address);			/* refresh outline    */
 	

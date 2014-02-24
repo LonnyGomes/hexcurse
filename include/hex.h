@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA *
  *									      *
 \******************************************************************************/
+#include <config.h>
 #include <ctype.h>				/* char types                 */
 #include <errno.h>				/* errors                     */
 #include <limits.h>
@@ -25,6 +26,12 @@
 #include <string.h>				/* string processing          */
 #include <strings.h>				/* string processing          */
 #include <unistd.h>				/* unix std routines          */
+#if defined(HAVE_STDINT_H)
+    #include <stdint.h>
+#endif
+#if defined(HAVE_INTTYPES_H)
+    #include <inttypes.h>
+#endif
 #include <sys/types.h>				/* types                      */
 #include "hgetopt.h"
 
@@ -41,6 +48,11 @@
     #define FALSE       0
 #endif
 
+#if !defined(HAVE_FSEEKO)
+    #define fseeko fseek
+    #define fteelo ftell
+#endif
+
 /* datatypes */
 typedef struct {                                /* struct that holds windows  */
     WINDOW  *hex,
@@ -53,14 +65,14 @@ typedef struct {                                /* struct that holds windows  */
 } WINS;
 
 struct LinkedList {				/* linked list structure      */
-    long int loc;
+    off_t loc;
     int val;
     struct LinkedList *next;
 };
 
 struct Stack {					/* struct to be used for stack*/
     int savedVal;
-    long int currentLoc;
+    off_t currentLoc;
     struct Stack *prev;
     struct LinkedList *llist;
 };
@@ -74,15 +86,16 @@ extern int  MAXY;				/* external globals           */
 extern WINS *windows;                           /* struct that stores windows */
 extern hexList *head;				/* head for linked list       */
 extern int  BASE;                               /* the base for the number    */
+extern int  MIN_ADDR_LENGTH;
 extern int  hex_outline_width;
 extern int  hex_win_width;
 extern int  ascii_outline_width;
 extern int  ascii_win_width;
-extern long maxlines;
-extern long currentLine;
+extern off_t maxlines;
+extern off_t currentLine;
 extern bool editHex;
 extern bool printHex;
-extern long LastLoc;
+extern off_t LastLoc;
 extern int  SIZE_CH;
 extern bool USE_EBCDIC;
 extern char EBCDIC[256];
@@ -96,10 +109,12 @@ extern char EBCDIC[256];
 #define llalloc() (struct LinkedList *) calloc(1, sizeof(struct LinkedList))
 #define isEmptyStack(stack) (((stack) == NULL) ? TRUE : FALSE)
 
+#define UNUSED(x) (void)(x)
+
 /* constants */
 #define KEY_PGDN        338
 #define KEY_PGUP        339
-#define HVERSION	"1.55"			/* the version of the source  */
+#define HVERSION	VERSION			/* the version of the source  */
 #define MIN_COLS        70                      /* screen has to be 70< cols  */
 #define MIN_LINES       7     /* 8 - 1 */       /* the slk crap minuses 1 line*/
 #define KEY_TAB 		9			/* value for the tab key      */
@@ -121,34 +136,36 @@ void restoreBorder(WINS *win);
 char *inputLine(WINDOW *win, int line, int col);
 
 /* file.c */
-void outline(FILE *fp, int linenum);
-int maxLoc(FILE *fp);
+void outline(FILE *fp, off_t linenum);
+off_t maxLoc(FILE *fp);
 void print_usage();
-int maxLines(int len);
+off_t maxLines(off_t len);
 int openfile(WINS *win, char *fpINfilename);
 void savefile(WINS *win, char *fpINfilename, char *fpOUTfilename);
-int hexSearch(FILE *fp, int ch[], int startfp, int length);
-int gotoLine(FILE *fp, int currLoc, int gotoLoc, int maxlines,  WINDOW *windows);
-int getLocVal(long loc);
-bool inHexList(long loc);
+off_t hexSearch(FILE *fp, int ch[], off_t startfp, int length);
+off_t gotoLine(FILE *fp, off_t currLoc, off_t gotoLoc, off_t maxlines,  WINDOW *windows);
+int getLocVal(off_t loc);
+bool inHexList(off_t loc);
 
 /* getopt.c */
 int hgetopt(int argc, char *const *argv, const char *optstring);
 
 /* hexcurse.c */
-long parseArgs(int argc, char *argv[], char *fpINfilename, char *fpOUTfilename);
+off_t parseArgs(int argc, char *argv[], char *fpINfilename, char *fpOUTfilename);
 /*void printDebug(hexList *head, int loc);*/
+int getMinimumAddressLength(off_t len);
 void catchSegfault(int sig);
 
 /* llist.c */
-hexList *deleteNode(hexList *head, int loc);
-hexList *insertItem(hexList *head, int loc, int val);
-int searchList(hexList *head, int loc);
-int writeChanges(WINS *win, FILE *fpIN, FILE *fpOUT, char *fpINfilename, char *fpOUTfilename);
+hexList *deleteNode(hexList *head, off_t loc);
+hexList *insertItem(hexList *head, off_t loc, int val);
+int searchList(hexList *head, off_t loc);
+int writeChanges(FILE *fpIN, FILE *fpOUT, char *fpINfilename, char *fpOUTfilename);
 hexList *freeList(hexList *head);
 
 /* screen.c */
 void init_menu(WINS *windows);
+void free_windows(WINS *windows);
 void exit_err(char *err_str);
 void init_screen(void);
 void screen_exit(int exit_val);
