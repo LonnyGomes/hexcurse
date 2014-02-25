@@ -22,7 +22,7 @@
  * Description: deletes an item from the linked list and*
  *	 	returns the head of the linked list.    *
 \********************************************************/	
-hexList *deleteNode(hexList *head, int loc)
+hexList *deleteNode(hexList *head, off_t loc)
 {
     if (head == NULL)					/* if NULL            */
         return head;					/* just return        */
@@ -46,7 +46,7 @@ hexList *deleteNode(hexList *head, int loc)
  * Description: inserts an item into the linked list and*
  *	 	returns the head of the linked list.    *
 \********************************************************/	
-hexList *insertItem(hexList *head, int loc, int val)
+hexList *insertItem(hexList *head, off_t loc, int val)
 {
     if (head == NULL)					/* if NULL create item*/
     {
@@ -86,7 +86,7 @@ hexList *insertItem(hexList *head, int loc, int val)
  *		function returns -1 if not found or a   *
  *		positve int of the modified value       * 
 \********************************************************/
-int searchList(hexList *head, int loc)
+int searchList(hexList *head, off_t loc)
 {   
     hexList *tmpHead;					/* allocate temp space*/
     tmpHead = head;					/* temp points to head*/
@@ -104,10 +104,10 @@ int searchList(hexList *head, int loc)
  * Description: write the changes to either the current *
  *		file or to a specified output file	*
 \*******************************************************/
-int writeChanges(WINS *win, FILE *fpIN, FILE *fpOUT,
+int writeChanges(FILE *fpIN, FILE *fpOUT,
 		 char *fpINfilename, char *fpOUTfilename)
 {   
-    unsigned int buff,prev_loc;					/* declare llist vars */
+    off_t buff,prev_loc;					/* declare llist vars */
     hexList *tmpHead = head;
 
     if ((fpOUT = fopen(fpOUTfilename, "w+")) && fpIN)
@@ -140,7 +140,7 @@ int writeChanges(WINS *win, FILE *fpIN, FILE *fpOUT,
     {
 	/* only print the latest change  from the linked list*/
 	if (prev_loc != tmpHead->loc) { 
-		fseek(fpOUT, tmpHead->loc, SEEK_SET);
+		fseeko(fpOUT, tmpHead->loc, SEEK_SET);
 		fputc(tmpHead->val, fpOUT);
 	}
 	        prev_loc = tmpHead->loc;

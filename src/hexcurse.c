@@ -28,6 +28,7 @@
 /*#define DEBUG_GOTO*/
 
 int     BASE, MAXY, resize = 0;
+int     MIN_ADDR_LENGTH;
 hexList *head;						/* linked list struct */
 WINS    *windows;					/* window structure   */
 char    EBCDIC[256],
@@ -65,10 +66,10 @@ int     hex_win_width,
 int main(int argc, char *argv[])			/* main program       */
 {
 
-    int  row, col, x, retval = 1, val;			/* counters, etc.     */
-    long int len;					/* len need to be long*/
+    int   x, retval = 1, val;			/* counters, etc.     */
+    off_t len;					/* len need to be off_t*/
 
-    windows = (WINS *) malloc(sizeof(WINS));	/* malloc windows     */
+    windows = (WINS *) calloc(1, sizeof(WINS));	/* malloc windows     */
     head = llalloc();							/* malloc list space  */
     fpINfilename = (char *) malloc(FN_LEN+1);	/* allocate in and    */
     fpOUTfilename = (char *) malloc(FN_LEN+1);	/* out file name ptrs */
@@ -77,6 +78,7 @@ int main(int argc, char *argv[])			/* main program       */
 
 							/* get cmd line args  */
     len = parseArgs(argc, argv, fpINfilename, fpOUTfilename);
+    MIN_ADDR_LENGTH = getMinimumAddressLength(len);
 
     use_env(TRUE);					/* use env values     */
     slk_init(0);					/* init menu bar      */
@@ -89,39 +91,41 @@ int main(int argc, char *argv[])			/* main program       */
 	fprintf(stderr," screen size is %dx%d\n\n", MIN_COLS, MIN_LINES + 1);
 	exit(-1);
     }
-    							/* calculate screen   */
-    BASE                = (resize > 0 && resize < COLS) ? resize:((COLS-14)/4);
-    MAXY                = (LINES) - 3;
-    hex_win_width       = BASE * 3;
-    ascii_win_width     = BASE;
-    hex_outline_width   = (BASE * 3) + 11;
-    ascii_outline_width = BASE + 2;
-
+    
     slk_set(6, (printHex) ? "Hex Addr":"Dec Addr", 1);
     init_fkeys();					/* define menu bar    */
-    init_menu(windows);					/* init windows       */
-
+    
 
     while (retval)
     {
-        head = freeList(head);				/* free & init head   */
+	free_windows(windows);
+        
+	/* calculate screen   */
+	BASE                = (resize > 0 && resize < COLS) ? resize:((COLS-6-MIN_ADDR_LENGTH)/4);
+	MAXY                = (LINES) - 3;
+	hex_win_width       = BASE * 3;
+	ascii_win_width     = BASE;
+	hex_outline_width   = (BASE * 3) + 3 + MIN_ADDR_LENGTH;
+	ascii_outline_width = BASE + 2;
+            
+	init_menu(windows);				/* init windows       */
+	head = freeList(head);				/* free & init head   */
 							/* print origin loc   */
-	mvwprintw(windows->hex_outline, 0, 1, "00000000");
+	mvwprintw(windows->hex_outline, 0, 1, "%0*d", MIN_ADDR_LENGTH, 0);
     
 	if (fpIN != NULL)				/* if no infile...    */
 	{
             len = maxLoc(fpIN);				/* get last file loc  */
 	    val = maxLines(len); 			/* max file lines     */
             for (x = 0; x <= MAXY && x<=val; x++)       /* output lines       */
-		outline(fpIN, x); 
+		outline(fpIN, x);
 	}
 
 	wmove(windows->hex, 0, 0);			/* cursor to origin   */
-	row = col = 0;					/* init row & col     */
     
 	refreshall(windows);				/* refresh all wins   */
 	doupdate();					/* update screen      */
-
+        
 	mvwaddch(windows->scrollbar, 1, 0, ACS_CKBOARD);/* clear scroller     */
 							/* get user input     */
 	retval = wacceptch(windows, len, fpINfilename, fpOUTfilename); 
@@ -162,7 +166,7 @@ void printDebug(hexList *head, long int loc)
  *		processes them.				*
  * Returns:	length of file				*
 \********************************************************/
-long parseArgs(int argc, char *argv[], char *fpINfilename, char *fpOUTfilename)
+off_t parseArgs(int argc, char *argv[], char *fpINfilename, char *fpOUTfilename)
 {
     extern char *optarg;				/* extern vars for    */
     extern int optind, /*opterr,*/ optopt;		/* getopt()	      */
@@ -211,6 +215,22 @@ long parseArgs(int argc, char *argv[], char *fpINfilename, char *fpOUTfilename)
 }
 
 /********************************************************\
+ * Description: Get the minimum address length for the  *
+ *              address column                          *
+ * Returns:	minimum length for addresses		*
+\********************************************************/
+int getMinimumAddressLength(off_t len)
+{
+        char buffer[1];
+        int min_address_length;
+        
+        min_address_length = snprintf(buffer, 1, "%jd", (intmax_t)len);
+        
+        /* At least 8 characters wide */
+        return min_address_length > 8 ? min_address_length : 8;
+}
+
+/********************************************************\
  * Description: in the event of a segmentation fault    *
  * 		this catches the signal and prints out  *
  *		instructions on where to send a bug     *
@@ -219,6 +239,9 @@ long parseArgs(int argc, char *argv[], char *fpINfilename, char *fpOUTfilename)
 \********************************************************/
 void catchSegfault(int sig)
 {
+    /* Avoid unused variable warning */
+    UNUSED(sig);
+    
     endwin();
     printf("\n\nHexcurse has encountered a segmentation fault!\n");
     printf("\tPlease submit a full bug report to devel@jewfish.net.\n");

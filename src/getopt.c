@@ -262,7 +262,7 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 	   p++, option_index++)
 	if (!strncmp (p->name, nextchar, s - nextchar))
 	  {
-	    if (s - nextchar == strlen (p->name))
+	    if (s - nextchar == (int)strlen(p->name))
 	      {
 		/* Exact match found.  */
 		pfound = p;

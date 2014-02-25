@@ -24,9 +24,9 @@
  *		hex and decimal values for the current         *
  *		lines. It doesn't return anything              *
 \*******************************************************/
-void outline(FILE *fp, int linenum)
+void outline(FILE *fp, off_t linenum)
 {
-    unsigned int i, c, tmp[BASE];				/* holds char values  */
+    int i, c, tmp[BASE];					/* holds char values  */
     hexList *tmpHead = head;					/* tmp linklist head  */
 
     for (i = 0; i < BASE; i++)					/* set vals to EOF    */
@@ -50,11 +50,11 @@ void outline(FILE *fp, int linenum)
     wclrtoeol(windows->hex);					/* clear lines        */
     wclrtoeol(windows->ascii);
 
-												/*print line's address*/
-    wprintw(windows->address, (printHex) ? "%08X ":"%08d ", (linenum * BASE));
+    /*print line's address*/
+    wprintw(windows->address, (printHex) ? "%0*jX ":"%0*jd ", MIN_ADDR_LENGTH, (intmax_t)(linenum * BASE));
 
     rewind(fp);									/* reset the file ptr */
-    fseek(fp, (linenum * BASE), 0);				/* set new pos for fp */
+    fseeko(fp, (linenum * BASE), 0);				/* set new pos for fp */
 
     for (i = 0; i < BASE && (c = getc(fp)) != EOF; i++)
     {
@@ -78,10 +78,10 @@ void outline(FILE *fp, int linenum)
  *		file.  It returns the number of chars  *
  *		in the file                            *
 \*******************************************************/
-int maxLoc(FILE *fp)
+off_t maxLoc(FILE *fp)
 {
-    fseek(fp, 0, SEEK_END);				/* seek to end of file*/
-    return((int)ftell(fp));				/* return val at EOF  */
+    fseeko(fp, 0, SEEK_END);				/* seek to end of file*/
+    return(ftello(fp));				/* return val at EOF  */
 }
 
 /******************************************************\
@@ -108,7 +108,7 @@ void print_usage()
  *		be displayed in the hexeditor.  The            *
  *		values is returned as an integer               *
 \******************************************************/
-int maxLines(int len)
+off_t maxLines(off_t len)
 {   
     if (BASE == 0) return(0);						/* avoid a div by 0   */
 
@@ -210,7 +210,7 @@ void savefile(WINS *win, char *fpINfilename, char *fpOUTfilename)
 	    bzero(fpOUTfilename, strlen(fpOUTfilename));	/* clear string       */
 
 														/*write to file       */
-	if (!writeChanges(win, fpIN, fpOUT, fpINfilename, fpOUTfilename))
+	if (!writeChanges(fpIN, fpOUT, fpINfilename, fpOUTfilename))
 	    popupWin("The file has been saved.", -1);
     }
 
@@ -225,15 +225,15 @@ void savefile(WINS *win, char *fpINfilename, char *fpOUTfilename)
  *		function returns the next location of   *
  *		the specified string or -1 if not found *
 \********************************************************/
-int hexSearch(FILE *fp, int ch[], int startfp, int length)
+off_t hexSearch(FILE *fp, int ch[], off_t startfp, int length)
 {
     int loop, tmp, c, flag=0;
-    long int currLoc, startLoc, foundLoc=-1;		/* init vars          */
+    off_t currLoc, startLoc, foundLoc=-1;		/* init vars          */
 
-    fseek(fp, startfp, SEEK_SET);			/* begin from loc     */
+    fseeko(fp, startfp, SEEK_SET);			/* begin from loc     */
 
     c = getc(fp);					/* get char from file */
-    currLoc = ftell(fp);				/* get location       */
+    currLoc = ftello(fp);				/* get location       */
     if ((tmp = searchList(head, currLoc-1)) != -1)	/* check for val in ll*/
 	c = tmp;
 
@@ -241,19 +241,19 @@ int hexSearch(FILE *fp, int ch[], int startfp, int length)
     {							/* beginning...       */
 	if (c == ch[0]) 				/* if char we want... */
 	{						
-	    startLoc = ftell(fp);			/* get location       */
+	    startLoc = ftello(fp);			/* get location       */
 							/* loop to find rest  */
 	    for (loop = 1; (loop < length) && (c != EOF); loop++)
 	    {
 		c = fgetc(fp); 
-    		currLoc = ftell(fp);
+    		currLoc = ftello(fp);
     		if ((tmp = searchList(head, currLoc-1)) != -1)
 		    c = tmp;
 		if (c != ch[loop])
 		    break;
 		    
 	    }
-		fseek(fp, startLoc, SEEK_SET);
+		fseeko(fp, startLoc, SEEK_SET);
 
 	    if ((loop == length) && (flag))		/* if found it        */
 		return startLoc - 1;			/* return location    */
@@ -267,12 +267,12 @@ int hexSearch(FILE *fp, int ch[], int startfp, int length)
 	if (c == EOF)					/* if EOF rewind      */
 	    rewind(fp);
 
-        currLoc = ftell(fp);				/* current location   */
+        currLoc = ftello(fp);				/* current location   */
 
 	if (currLoc != startfp) 			/* if not at start... */
 	{
 	    c = fgetc(fp);				/* get another char   */
-    	    currLoc = ftell(fp);
+    	    currLoc = ftello(fp);
     	    if ((tmp = searchList(head, currLoc-1)) != -1)
 	        c = tmp;
 	}
@@ -281,98 +281,18 @@ int hexSearch(FILE *fp, int ch[], int startfp, int length)
     return foundLoc;					/* return not found   */
 }
 
-char *boyerMooreSearch(FILE *fp, const char str[], int startfp, size_t textLen)
-{
-    unsigned charJump[AlphabetSize];
-    unsigned *matchJump;
-    unsigned *backUp;
-
-    size_t patLen;
-    unsigned u, uText, uPat, uA, uB;
-    char text[97];  /* temporarily created just to make things compile */
-
-    patLen = strlen(str);
-
-    matchJump = (unsigned *) malloc(2 * sizeof (unsigned) * (patLen + 1));
-
-    backUp = matchJump + patLen + 1;
-
-    memset(charJump, 0, AlphabetSize * sizeof(unsigned));
-    for (u = 0; u < patLen; u++)
-	charJump[((unsigned char) str[u])] = patLen - u - 1;
-
-    for (u = 1; u <= patLen; u++)
-	matchJump[u] = 2 * patLen - u;
-
-    u = patLen;
-    uA = patLen + 1;
-
-    while (u > 0)
-    {
-	backUp[u] = uA;
-	while (uA <= patLen && str[u - 1] != str[uA - 1])
-	{
-	    if (matchJump[uA] > patLen - u)
-		matchJump[uA] = patLen - u;
-
-            uA = backUp[uA];
-	}
-
-	u--;
-	uA--;
-    }
-
-    for (u = 1; u <= uA; u++)
-	if (matchJump[u] > patLen + uA - u)
-	    matchJump[u] = patLen + uA - u;
-
-    uB = backUp[uA];
-
-    while (uA <= patLen)
-    {
-	while (uA <= uB)
-	{
-	    if (matchJump[uA] > uB - uA + patLen)
-		matchJump[uA] = uB - uA + patLen;
-
-            uA++;
-	}
-	uB = backUp[uB];
-    }
-
-    uPat = patLen;
-    uText = patLen - 1;
-    while (uText < textLen && uPat != 0)
-    {
-	if (text[uText] == str[uPat - 1])
-	{
-	    uText--;
-	    uPat--;
-	}
-	else
-	{
-	    uA = charJump[((unsigned char) text[uText])];
-	    uB = matchJump[uPat];
-	    uText += max(uA, uB);
-	    uPat = patLen;
-	}
-    }
-
-    if (uPat == 0)
-	return ((char *)(text + (uText + 1)));
-    else
-        return NULL;
-}
-
 /********************************************************\
  * Description: goes to a certain location in the file  *
  * Returns:     currentLine (in file)                   *
 \********************************************************/
-int gotoLine(FILE *fp, int currLoc, int gotoLoc, int maxlines, WINDOW *win)
+off_t gotoLine(FILE *fp, off_t currLoc, off_t gotoLoc, off_t maxlines, WINDOW *win)
 {
-    int count, currentLine, row, col, tmp, linediff;
+    off_t count, currentLine, tmp, linediff;
+    int row, col;
 
+    /* col is not used, but needed for the getyx macro, this line is to avoid compiler warnings */
     getyx(win, row, col);
+    UNUSED(col);
 
     restoreBorder(windows);				/* restore border     */
 
@@ -448,7 +368,7 @@ int gotoLine(FILE *fp, int currLoc, int gotoLoc, int maxlines, WINDOW *win)
  * Description: gets values at given location in file	*
  * Returns:     the value at the given location	 	*
 \********************************************************/
-int getLocVal(long loc)
+int getLocVal(off_t loc)
 {
     hexList *tmpHead = head;				/* tmp linklist head  */
 
@@ -457,7 +377,7 @@ int getLocVal(long loc)
     if (tmpHead != NULL && (tmpHead->loc == loc))
 	return(tmpHead->val);
 
-    fseek(fpIN, loc, SEEK_SET);				/* goto location      */
+    fseeko(fpIN, loc, SEEK_SET);				/* goto location      */
     return(fgetc(fpIN));
 }
 
@@ -465,7 +385,7 @@ int getLocVal(long loc)
  * Description: checks if a loc is in the linked list   *
  * Returns:     returns TRUE if loc is in the llist     *
 \********************************************************/
-bool inHexList(long loc)
+bool inHexList(off_t loc)
 {
     hexList *tmpHead = head;				/* tmp linklist head  */
 
