@@ -41,12 +41,12 @@ void init_menu(WINS *windows)
 	    			     ascii_outline_width);
     windows->scrollbar = newwin(LINES, 1, 0, hex_outline_width);
 
-    windows->hex = newwin(LINES - 2, hex_win_width, 1, 10);
+    windows->hex = newwin(LINES - 2, hex_win_width, 1, MIN_ADDR_LENGTH + 2);
     windows->ascii = newwin(LINES - 2, ascii_win_width, 1, 
 	                    hex_outline_width + 2);
-    windows->address = newwin(LINES - 2, 9, 1, 1);
+    windows->address = newwin(LINES - 2, MIN_ADDR_LENGTH + 1, 1, 1);
 
-    windows->cur_address = newwin(1, 8, 0, 1);
+    windows->cur_address = newwin(1, MIN_ADDR_LENGTH, 0, 1);
 
     waddch(windows->scrollbar, ACS_UARROW);
     wattron(windows->scrollbar, A_REVERSE);
@@ -71,6 +71,34 @@ void init_menu(WINS *windows)
 	win = (x == 0) ? windows->ascii:windows->address;
     }
 
+}
+
+/******************************************************\
+ * Description: Deallocates the windows               *
+ *		that the hex editor uses.             *
+\******************************************************/
+void free_windows(WINS *windows)
+{
+      delwin(windows->cur_address);
+      windows->cur_address = NULL;
+      
+      delwin(windows->address);
+      windows->address = NULL;
+      
+      delwin(windows->ascii);
+      windows->ascii = NULL;
+      
+      delwin(windows->hex);
+      windows->hex = NULL;
+      
+      delwin(windows->scrollbar);
+      windows->scrollbar = NULL;
+      
+      delwin(windows->ascii_outline);
+      windows->ascii_outline = NULL;
+      
+      delwin(windows->hex_outline);
+      windows->hex_outline = NULL;
 }
 
 /******************************************************\
@@ -137,6 +165,9 @@ void init_fkeys()
 void checkScreenSize(int sig)
 {   
     int count;
+    
+    /* Avoid unused variable warning */
+    UNUSED(sig);
 
     clearScreen(windows);
     endwin();
@@ -147,8 +178,8 @@ void checkScreenSize(int sig)
     slk_noutrefresh();
     doupdate();
 							/* recacl these values*/
-    BASE                =   (COLS - 14) / 4;            /*base for the number */
-    hex_outline_width   =   (BASE * 3) + 11;
+    BASE                =   (COLS - 6 - MIN_ADDR_LENGTH) / 4;            /*base for the number */
+    hex_outline_width   =   (BASE * 3) + 3 + MIN_ADDR_LENGTH;
     MAXY                =   LINES - 3;
     hex_win_width       =   BASE * 3;
     ascii_outline_width =   BASE + 2;
@@ -241,6 +272,9 @@ void scrollbar(WINS *windows,  int cl, long maxLines)
 {
     float x, percent;
 
+    /* Avoid unused variable warning */
+    UNUSED(maxLines);
+    
     /* cl really should be a long, it wasn't changed because cl is used
      * in other functions as an int.  Eventually everything should be using
      * long rather than int */
@@ -252,7 +286,7 @@ void scrollbar(WINS *windows,  int cl, long maxLines)
 
     x = (int)(percent * (float)(LINES));
     x = (x < 1) ? 1 : x;
-    x = (x >= (LINES - 1)) ?  x = LINES - 2 : x;
+    x = (x >= (LINES - 1)) ? LINES - 2 : x;
 
     wattron(windows->scrollbar, A_REVERSE);		/* set attribs on bar */
     wattron(windows->scrollbar, A_REVERSE);		/* set attribs on bar */
