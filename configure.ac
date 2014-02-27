@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([hexcurse], [1.55])
+AC_INIT([hexcurse], [1.58])
 AC_CONFIG_SRCDIR(src/file.c)
 AM_INIT_AUTOMAKE([-Wall])
 
