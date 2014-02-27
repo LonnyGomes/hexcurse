@@ -37,7 +37,9 @@
 #ifdef _SGIAPI
 #include <alloca.h>
 #endif
+#ifndef __alloca
 #define __alloca      alloca
+#endif
 /* end of modification */
 
 #ifdef HAVE_OPTIND
