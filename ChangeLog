@@ -1,4 +1,8 @@
-Current version: hexcurse 1.55 (12.22.2003)
+Current version: hexcurse 1.58 (02.26.2014)
+ * Incorporated pull request by Ignacio Martínez
+ <ignacio.martinez.rivera@gmail.com> which enables large file support
+
+hexcurse 1.55 (12.22.2003)
  * Fixed file-saving bug which would not allow some changes to be saved to file
 
 hexcurse 1.54 (06.06.2002)

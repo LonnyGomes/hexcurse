@@ -1,4 +1,4 @@
-hexcurse v1.55-2
+hexcurse v1.58
 =====================================
 ![hexcurse screenshot](http://lonnygomes.github.io/screenshots/hexcurse2-ss.jpg)
 
