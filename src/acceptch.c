@@ -29,7 +29,7 @@ off_t LastLoc;                                          /*last cursor location*/
 bool editHex;						/* flag to edit h or a*/
 int SIZE_CH;                                            /* global winch flag  */
 
-int wacceptch(WINS *win, off_t len, char *fpINfilename, char *fpOUTfilename)
+int wacceptch(WINS *win, off_t len)
 {
     intmax_t tmp_max;
     
@@ -391,7 +391,7 @@ int wacceptch(WINS *win, off_t len, char *fpINfilename, char *fpOUTfilename)
 	case KEY_F(3):					/* if F3 or ^o...     */
 
 
-		if (openfile(win, fpINfilename))	/* open file          */
+		if (openfile(win))			/* open file          */
 		{
 		    if (fpIN)
                     {
@@ -404,14 +404,14 @@ int wacceptch(WINS *win, off_t len, char *fpINfilename, char *fpOUTfilename)
 
 	case CTRL_AND('s'):				/* if F2 or ^s...     */
 	case KEY_F(2):					/* save the file      */
-		savefile(win, fpINfilename, fpOUTfilename);
+		savefile(win);
 		break;
 
 	case CTRL_AND('f'):
 	case KEY_F(5):
  		/* SeachStr stores the last searched string into the format *\
 	 	\* "(XXXXXXX...)" with 10 being the max chars shown         */
-                if (!strcmp(fpINfilename, "")) 
+                if (!fpINfilename || !strcmp(fpINfilename, "")) 
 		{	 				/* output prompt      */
 		    wmove(win->hex_outline, LINES-1, 1);
                     wclrtoeol(win->hex_outline);
@@ -771,8 +771,12 @@ int wacceptch(WINS *win, off_t len, char *fpINfilename, char *fpOUTfilename)
 	doupdate();					/* update visual      */
     }
 
+    free(temp);
+    while (stack != NULL)
+	popStack(&stack);
+    
     /* if user chose to save on exit, value will == 2 */
-    if (save == 2) savefile(win, fpINfilename, fpOUTfilename);
+    if (save == 2) savefile(win);
 
     return 0;						/* return             */
 }
@@ -800,15 +804,22 @@ char *inputLine(WINDOW *win, int line, int col)
     int x;
     unsigned long int c;
     char *ch;
+    int allocated = 81;
 
     noecho();
 
-    ch = (char *)malloc(81);				/* allocate space     */
+    ch = (char *)malloc(allocated);				/* allocate space     */
 
     wmove(win, line, col);
 
     for (x = 0; (c = wgetch(win)) != 10; x++) 
     {
+	if (x > 0 && x >= allocated)
+	{
+		ch = (char*)realloc(ch, x + 1);
+		allocated = x + 1;
+	}
+	
         wclrtoeol(win);					/* clear line         */
         if (c == '\b' || c == 127) 			/* get backspace      */
 	{
