@@ -34,7 +34,7 @@ int wacceptch(WINS *win, off_t len, char *fpINfilename, char *fpOUTfilename)
     intmax_t tmp_max;
     
     off_t count;
-    int  row = 0, col = 0, val, tmpval, 	        /* counters, etc.     */   
+    int  col = 0, val, tmpval, 	    			/* counters, etc.     */   
          ch[17],					/* holds search string*/
 	 eol = (BASE * 3) - 1,				/* end of line pos    */
          save = 0,					/* to save on exit    */
@@ -45,7 +45,8 @@ int wacceptch(WINS *win, off_t len, char *fpINfilename, char *fpOUTfilename)
     off_t cl,						/* current loc in file*/
 	  gotoLoc = 0,					/* goto location      */
 	  lastLine = 0,					/* line b4 LastLine   */
-	  currentLine = 0;				/* current line value */
+	  currentLine = 0,				/* current line value */
+	  row = 0;
 
     char *gotoLocStr,					/* convert to gotoLoc */
          *temp,

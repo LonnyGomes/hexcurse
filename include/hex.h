@@ -154,7 +154,7 @@ int hgetopt(int argc, char *const *argv, const char *optstring);
 off_t parseArgs(int argc, char *argv[], char *fpINfilename, char *fpOUTfilename);
 /*void printDebug(hexList *head, int loc);*/
 int getMinimumAddressLength(off_t len);
-void catchSegfault(int sig);
+RETSIGTYPE catchSegfault(int sig);
 
 /* llist.c */
 hexList *deleteNode(hexList *head, off_t loc);
@@ -170,7 +170,7 @@ void exit_err(char *err_str);
 void init_screen(void);
 void screen_exit(int exit_val);
 void init_fkeys();
-void checkScreenSize(int sig);
+RETSIGTYPE checkScreenSize(int sig);
 void refreshall(WINS *win);
 WINDOW *drawbox(int y, int x, int height, int width);
 void scrollbar(WINS *windows, int currentLine, long maxLines);

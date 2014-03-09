@@ -66,8 +66,8 @@ int     hex_win_width,
 int main(int argc, char *argv[])			/* main program       */
 {
 
-    int   x, retval = 1, val;			/* counters, etc.     */
-    off_t len;					/* len need to be off_t*/
+    int   x, retval = 1;			/* counters, etc.     */
+    off_t val, len;					/* len need to be off_t*/
 
     windows = (WINS *) calloc(1, sizeof(WINS));	/* malloc windows     */
     head = llalloc();							/* malloc list space  */
@@ -237,7 +237,7 @@ int getMinimumAddressLength(off_t len)
  * 		report.					*
  * Returns:	length of file				*
 \********************************************************/
-void catchSegfault(int sig)
+RETSIGTYPE catchSegfault(int sig)
 {
     /* Avoid unused variable warning */
     UNUSED(sig);
