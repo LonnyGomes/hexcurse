@@ -66,18 +66,18 @@ int     hex_win_width,
 int main(int argc, char *argv[])			/* main program       */
 {
 
-    int   x, retval = 1, val;			/* counters, etc.     */
-    off_t len;					/* len need to be off_t*/
+    int   x, retval = 1;			/* counters, etc.     */
+    off_t val, len;					/* len need to be off_t*/
 
     windows = (WINS *) calloc(1, sizeof(WINS));	/* malloc windows     */
     head = llalloc();							/* malloc list space  */
-    fpINfilename = (char *) malloc(FN_LEN+1);	/* allocate in and    */
-    fpOUTfilename = (char *) malloc(FN_LEN+1);	/* out file name ptrs */
+    fpINfilename = NULL;			/* allocate in and    */
+    fpOUTfilename = NULL;			/* out file name ptrs */
     printHex = TRUE;							/* address format     */
     USE_EBCDIC = FALSE;							/*use ascii by default*/
 
 							/* get cmd line args  */
-    len = parseArgs(argc, argv, fpINfilename, fpOUTfilename);
+    len = parseArgs(argc, argv);
     MIN_ADDR_LENGTH = getMinimumAddressLength(len);
 
     use_env(TRUE);					/* use env values     */
@@ -128,8 +128,12 @@ int main(int argc, char *argv[])			/* main program       */
         
 	mvwaddch(windows->scrollbar, 1, 0, ACS_CKBOARD);/* clear scroller     */
 							/* get user input     */
-	retval = wacceptch(windows, len, fpINfilename, fpOUTfilename); 
+	retval = wacceptch(windows, len); 
     }
+    
+    free(fpINfilename);
+    free(fpOUTfilename);
+    freeList(head);
     
     screen_exit(0);					/* end visualizations */
     return retval;					/* return             */
@@ -166,7 +170,7 @@ void printDebug(hexList *head, long int loc)
  *		processes them.				*
  * Returns:	length of file				*
 \********************************************************/
-off_t parseArgs(int argc, char *argv[], char *fpINfilename, char *fpOUTfilename)
+off_t parseArgs(int argc, char *argv[])
 {
     extern char *optarg;				/* extern vars for    */
     extern int optind, /*opterr,*/ optopt;		/* getopt()	      */
@@ -181,10 +185,12 @@ off_t parseArgs(int argc, char *argv[], char *fpINfilename, char *fpOUTfilename)
             case 'a':	printHex = FALSE;		/* decimal addresses  */
                         break;
 							/* infile             */
-	    case 'i':	strncpy(fpINfilename, optarg, FN_LEN);
+	    case 'i':	free(fpINfilename);
+			fpINfilename = strdup(optarg);
 			break;
 							/* outfile            */
-	    case 'o':   strncpy(fpOUTfilename, optarg, FN_LEN);
+	    case 'o':   free(fpOUTfilename);
+			fpOUTfilename = strdup(optarg);
 			break;
 
             case 'r':   resize = atoi(optarg);		/* don't resize screen*/
@@ -205,7 +211,10 @@ off_t parseArgs(int argc, char *argv[], char *fpINfilename, char *fpOUTfilename)
     argv += optind;
 
     if (argv[0])
-        strncpy(fpINfilename, argv[0], FN_LEN);
+    {
+	free(fpINfilename);
+        fpINfilename = strdup(argv[0]);
+    }
 
     if (strcmp(fpINfilename, ""))
         if ((fpIN = fopen(fpINfilename, "r")) == NULL)
@@ -237,7 +246,7 @@ int getMinimumAddressLength(off_t len)
  * 		report.					*
  * Returns:	length of file				*
 \********************************************************/
-void catchSegfault(int sig)
+RETSIGTYPE catchSegfault(int sig)
 {
     /* Avoid unused variable warning */
     UNUSED(sig);

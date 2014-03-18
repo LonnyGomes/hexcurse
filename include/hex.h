@@ -118,7 +118,6 @@ extern char EBCDIC[256];
 #define MIN_COLS        70                      /* screen has to be 70< cols  */
 #define MIN_LINES       7     /* 8 - 1 */       /* the slk crap minuses 1 line*/
 #define KEY_TAB 		9			/* value for the tab key      */
-#define FN_LEN			255
 
 #define AlphabetSize (UCHAR_MAX +1)		/* for portability            */
 
@@ -126,12 +125,12 @@ extern char EBCDIC[256];
 #define max(a,b) ((a) >(b) ? (a) : (b))
 #endif
 
-FILE *fpIN, *fpOUT;				/* global file ptrs           */
+FILE *fpIN;		        		/* global file ptr           */
 
 /* function prototypes */
 
 /* acceptch.c */
-int wacceptch(WINS *windows, off_t len, char *fpINfilename, char *fpOUTfilename);
+int wacceptch(WINS *windows, off_t len);
 void restoreBorder(WINS *win);
 char *inputLine(WINDOW *win, int line, int col);
 
@@ -140,8 +139,8 @@ void outline(FILE *fp, off_t linenum);
 off_t maxLoc(FILE *fp);
 void print_usage();
 off_t maxLines(off_t len);
-int openfile(WINS *win, char *fpINfilename);
-void savefile(WINS *win, char *fpINfilename, char *fpOUTfilename);
+int openfile(WINS *win);
+void savefile(WINS *win);
 off_t hexSearch(FILE *fp, int ch[], off_t startfp, int length);
 off_t gotoLine(FILE *fp, off_t currLoc, off_t gotoLoc, off_t maxlines,  WINDOW *windows);
 int getLocVal(off_t loc);
@@ -151,16 +150,16 @@ bool inHexList(off_t loc);
 int hgetopt(int argc, char *const *argv, const char *optstring);
 
 /* hexcurse.c */
-off_t parseArgs(int argc, char *argv[], char *fpINfilename, char *fpOUTfilename);
+off_t parseArgs(int argc, char *argv[]);
 /*void printDebug(hexList *head, int loc);*/
 int getMinimumAddressLength(off_t len);
-void catchSegfault(int sig);
+RETSIGTYPE catchSegfault(int sig);
 
 /* llist.c */
 hexList *deleteNode(hexList *head, off_t loc);
 hexList *insertItem(hexList *head, off_t loc, int val);
 int searchList(hexList *head, off_t loc);
-int writeChanges(FILE *fpIN, FILE *fpOUT, char *fpINfilename, char *fpOUTfilename);
+int writeChanges();
 hexList *freeList(hexList *head);
 
 /* screen.c */
@@ -170,7 +169,7 @@ void exit_err(char *err_str);
 void init_screen(void);
 void screen_exit(int exit_val);
 void init_fkeys();
-void checkScreenSize(int sig);
+RETSIGTYPE checkScreenSize(int sig);
 void refreshall(WINS *win);
 WINDOW *drawbox(int y, int x, int height, int width);
 void scrollbar(WINS *windows, int currentLine, long maxLines);

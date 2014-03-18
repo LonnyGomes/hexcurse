@@ -162,7 +162,7 @@ void init_fkeys()
  *		terminal and prompts for the user to  *
  *		change the screen.		      *
 \******************************************************/
-void checkScreenSize(int sig)
+RETSIGTYPE checkScreenSize(int sig)
 {   
     int count;
     
@@ -215,15 +215,9 @@ void checkScreenSize(int sig)
 	    for (count = 0; count <= MAXY && count <= maxLines(maxLoc(fpIN)); 
 		 count++)
 		outline(fpIN, count);
-	    /*
-	    mvwprintw(windows->cur_address, 0, 0, (printHex) ? "%08X":"%08d",
-		      LastLoc);
-	    */
-	    mvwprintw(windows->cur_address, 0, 0, "%s", "00000000");
+
+	    mvwprintw(windows->cur_address, 0, 0, "%0*d", MIN_ADDR_LENGTH, 0);
 	    wmove(windows->hex,0,0);
-	    /*currentLine = gotoLine(fpIN, 0, LastLoc, maxlines,
-				    (editHex) ? windows->hex : windows->ascii);
-				       */
 	}
 
 	refreshall(windows);

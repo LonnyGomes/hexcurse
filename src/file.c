@@ -123,12 +123,10 @@ off_t maxLines(off_t len)
  * Description: opens file specified at input returning *
  *		non-zero if the file opened correctly   *
 \********************************************************/
-int openfile(WINS *win, char *fpINfilename)
+int openfile(WINS *win)
 {
     char *ch;
     FILE *tmpfp;                                        /* temp pointer       */
-
-    ch = (char *) malloc(81);
 
     wmove(win->hex_outline, LINES-1, 21);               /* output prompt      */
     wclrtoeol(win->hex_outline);
@@ -145,11 +143,14 @@ int openfile(WINS *win, char *fpINfilename)
     {
 		restoreBorder(win);								/* restore border     */
 		wrefresh(win->hex_outline);                    	/* refresh window     */
+		free(ch);
 		return FALSE; 
     }
 
-    if (ch[0] != '\0')
-        strncpy(fpINfilename, ch, 80);
+    if (ch[0] != '\0') {
+	free(fpINfilename);
+	fpINfilename = ch;
+    }
 
     if (!(tmpfp = fopen(fpINfilename, "r")))            /* if cannot open...  */
     {
@@ -184,18 +185,14 @@ int openfile(WINS *win, char *fpINfilename)
  * Description: saves file specified from input, and    *
  *		doesn't return anything                 *
 \********************************************************/
-void savefile(WINS *win, char *fpINfilename, char *fpOUTfilename)
+void savefile(WINS *win)
 {
     char *ch;                                           /* temp string        */
-    ch = (char *) malloc(81);                           /* malloc temp string */
-
-    if (!fpINfilename)
-        fpINfilename = (char *) malloc(81);             /* allocate if NULL   */
 
     wmove(win->hex_outline, LINES-1, 20);               /* clear line and     */
     wclrtoeol(win->hex_outline);                        /* output prompt      */
     mvwprintw(win->hex_outline, LINES-1, 1, "Enter file to save: %s",
-             (strcmp(fpOUTfilename, "")) ? fpOUTfilename:fpINfilename);
+             (fpOUTfilename != NULL && strcmp(fpOUTfilename, "")) ? fpOUTfilename:fpINfilename);
 
     wrefresh(win->hex_outline);                         /* refresh window     */
 
@@ -203,18 +200,33 @@ void savefile(WINS *win, char *fpINfilename, char *fpOUTfilename)
 
     if (ch[0] != 27)						/*if escape wasn't hit*/
     {
-	if (ch[0] != '\0')                              	/* if string exist... */
-	    strncpy(fpOUTfilename, ch, 80);             	/* copy into fileout  */
-														/* if infile...       */
-	if (!strncmp(fpOUTfilename, fpINfilename, strlen(fpINfilename)))           
-	    bzero(fpOUTfilename, strlen(fpOUTfilename));	/* clear string       */
-
-														/*write to file       */
-	if (!writeChanges(fpIN, fpOUT, fpINfilename, fpOUTfilename))
+	if (ch[0] == '\0')					/* same filename as input */
+	{
+	    free(fpOUTfilename);
+	    fpOUTfilename = NULL;
+	    free(ch);
+	}
+	else 			                             	/* if string exist... */
+	{
+	    free(fpOUTfilename);
+	    fpOUTfilename = ch;    		         	/* copy into fileout  */
+															/* if infile...       */
+	    if (strcmp(fpOUTfilename, fpINfilename) == 0)
+	    {
+		free(fpOUTfilename);
+		fpOUTfilename = NULL;
+	    }
+	}
+	
+	/*write to file       */
+	if (!writeChanges())
 	    popupWin("The file has been saved.", -1);
     }
-
+    else
+    {
 	free(ch);
+    }
+
     restoreBorder(win);
     wnoutrefresh(win->hex_outline);
 }

@@ -104,27 +104,31 @@ int searchList(hexList *head, off_t loc)
  * Description: write the changes to either the current *
  *		file or to a specified output file	*
 \*******************************************************/
-int writeChanges(FILE *fpIN, FILE *fpOUT,
-		 char *fpINfilename, char *fpOUTfilename)
+int writeChanges()
 {   
+    FILE *fpOUT = NULL;
+    FILE *fptmp = NULL;
+    
     off_t buff,prev_loc;					/* declare llist vars */
     hexList *tmpHead = head;
 
-    if ((fpOUT = fopen(fpOUTfilename, "w+")) && fpIN)
+    if (fpOUTfilename && fpIN && (fpOUT = fopen(fpOUTfilename, "w+")))
     {										/* open the write file*/
+	fptmp = fpOUT;
         rewind(fpIN);						/* set file loc to 0  */
 		rewind(fpOUT);					
 		while ((buff = fgetc(fpIN)) != EOF)	/*write to file buffer*/
 			fputc(buff, fpOUT);
     }
-    else if (!fpOUT && fpIN)				/* if no output file  */
+    else if (fpIN)				/* if no output file  */
     {
-		if (!(fpOUT = freopen(fpINfilename, "r+", fpIN)) || *fpOUTfilename)
+		if (!(fpIN = freopen(fpINfilename, "r+", fpIN)))
 		{
             popupWin("Cannot write to file: bad permissions", -1);
 
 			return 1;
 		}
+		fptmp = fpIN;
     }
     else
     {
@@ -132,26 +136,27 @@ int writeChanges(FILE *fpIN, FILE *fpOUT,
 
 		return 1;
     }
-
+    
     rewind(fpIN);
-    rewind(fpOUT);
+    rewind(fptmp);
     prev_loc = -1;
     while (tmpHead != NULL)				/* write to file      */
     {
 	/* only print the latest change  from the linked list*/
 	if (prev_loc != tmpHead->loc) { 
-		fseeko(fpOUT, tmpHead->loc, SEEK_SET);
-		fputc(tmpHead->val, fpOUT);
+		fseeko(fptmp, tmpHead->loc, SEEK_SET);
+		fputc(tmpHead->val, fptmp);
 	}
 	        prev_loc = tmpHead->loc;
 		tmpHead = tmpHead->next;
 
     }
 	
-    fflush(fpOUT);					/* flush buffto disk  */
-    fpIN = fpOUT;
+    fflush(fptmp);					/* flush buffto disk  */
+    
     rewind(fpIN);					/* reset file pointer */
-    rewind(fpOUT);					/* to the beginning   */
+    if (fpIN != fptmp)
+	fclose(fptmp);
 
     return 0;
 
