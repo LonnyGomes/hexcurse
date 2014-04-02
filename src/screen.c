@@ -27,9 +27,6 @@ void init_menu(WINS *windows)
     int x;
     WINDOW *win;
 
-    for (x = 1; x < 24; x++)				/* blocks all signals */
-	signal(x, SIG_IGN);				/* ignores the sigs   */
-
     /*signal(SIGCHLD,  SIG_DFL);                                              */
     signal(SIGSEGV,  catchSegfault);			/* catch segfault sig */
     /* the following is still under development, please report any bugs found */
