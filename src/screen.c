@@ -424,37 +424,6 @@ void clearScreen(WINS *win)
     doupdate();
 }
 
-/******************************************************\
- * Description:	Checks if the exit key has been       *
- *		pressed.  If so, it checks if the     *
- *		file has been saved since the last    *
- *		modification.  If it hasn't it prompts*
- *		the user asking if they would like to *
- *		save.				      *
- * Returns:     2 == save, 1 == no save, 0 == cancel  *
-\******************************************************/
-int quitProgram(int notChanged, short int ch)
-{   
-    short int str;
-							/* if exit key...     */
-    if ((ch == KEY_F(8)) || (ch == CTRL_AND('q')) || (ch == CTRL_AND('x')))
-    {
-        if (!notChanged)				/* if changes made    */
-        {
-							/* prompt for exit    */
-            str = questionWin("Do you want to save changes? (y/n)");
-
-            if (str == 'Y' || str == 'y')		/* if yes, save       */
-                return 2;
-            else if ((str != 'N') && (str != 'n'))	/* don't quit, cancel */
-                return 0;
-        }
-
-        return 1;					/* quit, don't save   */
-    }
-    else 
-        return 0;					/* don't quit         */
-}
 
 /******************************************************\
  * Description:	Creates a "window popup" where given  *
