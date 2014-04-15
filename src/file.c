@@ -182,12 +182,13 @@ int openfile(WINS *win)
 }
 
 /********************************************************\
- * Description: saves file specified from input, and    *
- *		doesn't return anything                 *
+ * Description: saves file specified from input, return *
+ *		non-zero if the file is saved correctly *
 \********************************************************/
-void savefile(WINS *win)
+int savefile(WINS *win)
 {
     char *ch;                                           /* temp string        */
+    int exitCode = 0;
 
     wmove(win->hex_outline, LINES-1, 20);               /* clear line and     */
     wclrtoeol(win->hex_outline);                        /* output prompt      */
@@ -200,35 +201,38 @@ void savefile(WINS *win)
 
     if (ch[0] != 27)						/*if escape wasn't hit*/
     {
-	if (ch[0] == '\0')					/* same filename as input */
+	if (ch[0] != '\0')
 	{
-	    free(fpOUTfilename);
-	    fpOUTfilename = NULL;
-	    free(ch);
+		free(fpOUTfilename);
+		fpOUTfilename = ch;		/* copy into fileout  */
 	}
-	else 			                             	/* if string exist... */
+	else
 	{
-	    free(fpOUTfilename);
-	    fpOUTfilename = ch;    		         	/* copy into fileout  */
-															/* if infile...       */
-	    if (strcmp(fpOUTfilename, fpINfilename) == 0)
-	    {
+		free(ch);
+	}
+	
+	/* if infile is equal to outfile...   */
+	if (fpOUTfilename && strcmp(fpOUTfilename, fpINfilename) == 0)
+	{
 		free(fpOUTfilename);
 		fpOUTfilename = NULL;
-	    }
 	}
 	
 	/*write to file       */
 	if (!writeChanges())
 	    popupWin("The file has been saved.", -1);
+	else
+	    exitCode = 1;
     }
     else
     {
 	free(ch);
+	exitCode = 2;
     }
 
     restoreBorder(win);
     wnoutrefresh(win->hex_outline);
+    return exitCode;
 }
 
 /********************************************************\

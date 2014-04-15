@@ -140,7 +140,7 @@ off_t maxLoc(FILE *fp);
 void print_usage();
 off_t maxLines(off_t len);
 int openfile(WINS *win);
-void savefile(WINS *win);
+int savefile(WINS *win);
 off_t hexSearch(FILE *fp, int ch[], off_t startfp, int length);
 off_t gotoLine(FILE *fp, off_t currLoc, off_t gotoLoc, off_t maxlines,  WINDOW *windows);
 int getLocVal(off_t loc);
@@ -176,7 +176,6 @@ void scrollbar(WINS *windows, int currentLine, long maxLines);
 void printHelp(WINS *win);
 void winscroll(WINS *win, WINDOW *, int n, int currentLine);
 void clearScreen(WINS *win);
-int  quitProgram(int notChanged, short int ch);
 void popupWin(char *msg, int time);
 short int questionWin(char *msg);
 

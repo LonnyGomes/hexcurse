@@ -37,7 +37,6 @@ int wacceptch(WINS *win, off_t len)
     int  col = 0, val, tmpval, 	    			/* counters, etc.     */   
          ch[17],					/* holds search string*/
 	 eol = (BASE * 3) - 1,				/* end of line pos    */
-         save = 0,					/* to save on exit    */
 	 lastRow = 0, lastCol = 0,			/* last row/col coords*/
 	 curVal = 0,	        			/* vals @ cursor locs */
 	 tmp = 0;
@@ -62,6 +61,8 @@ int wacceptch(WINS *win, off_t len)
     SIZE_CH	= FALSE;				/* set winch to false */
     Winds       = win->hex;				/* curr edit window   */
     maxlines    = maxLines(len);			/* lines in file      */
+    
+    bool shouldExit = false;
 
     /*createStack(stack);*/				/* init the stack     */
     stack = NULL;
@@ -82,8 +83,10 @@ int wacceptch(WINS *win, off_t len)
     }
         
 							/* get keys til exit  */
-    while (!(save=quitProgram(isEmptyStack(stack),(key = wgetch(Winds)))))
+    while(!shouldExit)
+    //while (!(save=quitProgram(isEmptyStack(stack),(key = wgetch(Winds)))))
     {
+        key = wgetch(Winds);
 	lastRow = row;
 	lastCol = col;
 	getyx(Winds, row, col);				/* curent cursor loc  */
@@ -110,6 +113,30 @@ int wacceptch(WINS *win, off_t len)
 	
 
 	switch (key) {					/* check keypress     */
+    
+							/* if exit key...     */
+	case CTRL_AND('q'):
+	case CTRL_AND('x'):
+	case KEY_F(8):
+		if (isEmptyStack(stack))
+		{
+			/* No pending changes */
+			shouldExit = true;
+		}
+		else
+		{
+			short int str = questionWin("Do you want to save changes? (y/n)");
+			if (str == 'Y' || str == 'y')
+			{
+				if (savefile(win) == 0)
+					shouldExit = true;
+			}
+			else if (str == 'N' || str == 'n')
+			{
+				shouldExit = true;
+			}
+		}
+		break;
 
 	case KEY_UP:					/* if UP...           */
 		if (currentLine > 0) 			/* move up...         */
@@ -775,9 +802,6 @@ int wacceptch(WINS *win, off_t len)
     while (stack != NULL)
 	popStack(&stack);
     
-    /* if user chose to save on exit, value will == 2 */
-    if (save == 2) savefile(win);
-
     return 0;						/* return             */
 }
 
