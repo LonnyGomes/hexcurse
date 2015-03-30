@@ -216,7 +216,7 @@ off_t parseArgs(int argc, char *argv[])
         fpINfilename = strdup(argv[0]);
     }
 
-    if (strcmp(fpINfilename, ""))
+    if (fpINfilename && strcmp(fpINfilename, ""))
         if ((fpIN = fopen(fpINfilename, "r")) == NULL)
             exit_err("Could not open file");
 
