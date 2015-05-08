@@ -35,7 +35,7 @@ int wacceptch(WINS *win, off_t len)
     
     off_t count;
     int  col = 0, val, tmpval, 	    			/* counters, etc.     */   
-         ch[17],					/* holds search string*/
+         ch[81],					/* holds search string*/
 	 eol = (BASE * 3) - 1,				/* end of line pos    */
 	 lastRow = 0, lastCol = 0,			/* last row/col coords*/
 	 curVal = 0,	        			/* vals @ cursor locs */
@@ -447,7 +447,13 @@ int wacceptch(WINS *win, off_t len)
                     wrefresh(win->hex_outline);
                     break;
                 }
- 
+
+        if (temp && *temp && key == KEY_F(5))
+        {
+            // if F5 was pressed, and we already have a search string,
+            //  don't ask for user input
+            ;
+        } else { 
 
 		if (temp != NULL)
 		{
@@ -496,7 +502,8 @@ int wacceptch(WINS *win, off_t len)
 		    strncpy(temp, tmpstr, (strlen(tmpstr) > 80) 
 			    ? 80 : strlen(tmpstr));
 		}
-
+        }
+        
 		val = 0;
 							/* parse out input    */
 	        for (count = 0; temp[count] != 0 && count < 80; count++)
@@ -523,12 +530,15 @@ int wacceptch(WINS *win, off_t len)
 		if ((count % 2 > 0) && (editHex))	/* add last byte on   */
 			    ch[(count + 1) / 2] = tmp;
 
+        gotoLoc = -1;
 		if (val != -1)				/* if val checks out  */
 							/* search for it      */
-		    val = hexSearch(fpIN, ch, cursorLoc(currentLine, col,
-			  editHex, BASE), (editHex) ? ((count+1)/2) : count);
+		    //val = hexSearch(fpIN, ch, cursorLoc(currentLine, col,
+			  //editHex, BASE), (editHex) ? ((count+1)/2) : count);
+            gotoLoc = hexSearchBM(win->hex_outline, fpIN, ch, (off_t) cursorLoc(currentLine, col,
+			  editHex, BASE), (int) (editHex) ? ((count+1)/2) : count);
 
-		if (val == -1) 				/* if nothing came up */
+		if (gotoLoc == -1) 				/* if nothing came up */
 		{
 		    popupWin("Value not found!", -1);
                     restoreBorder(win);			/* restore border     */
@@ -540,7 +550,7 @@ int wacceptch(WINS *win, off_t len)
 							/* goto found loc     */
                     currentLine = gotoLine(fpIN,
                                         cursorLoc(currentLine,col,editHex,BASE),
-                                           val, maxlines, Winds);
+                                           gotoLoc, maxlines, Winds);
 
 		}
 		break;
@@ -729,13 +739,14 @@ int wacceptch(WINS *win, off_t len)
 
 		}
 		break;
-
+        
 #ifdef DEBUG_LLIST
 	case CTRL_AND('x'):
 	    printDebug(head, -1);
 	    break;
 #endif
-	}
+
+	} // switch
 
 	getyx(Winds, row, col);				/* get cur row/col    */
 	if (fpIN)
