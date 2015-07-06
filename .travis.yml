@@ -10,4 +10,4 @@ os:
 sudo: false
 
 script:
-    - autoreconf -i -f && ./configure && make && make install
+    - autoreconf -i -f && ./configure --prefix=$(pwd)/build && make && make install
