@@ -99,6 +99,7 @@ extern off_t LastLoc;
 extern int  SIZE_CH;
 extern bool USE_EBCDIC;
 extern char EBCDIC[256];
+extern bool color_enabled;
 
 /* macros */
 /*#define currentLoc(line, col) ((line) * BASE +((col)/3)) */
@@ -184,3 +185,10 @@ void createStack(hexStack *stack);
 void pushStack(hexStack **stack, hexStack *tmpStack);
 void popStack(hexStack **stack);
 void smashDaStack(hexStack **stack);
+
+/* color.c */
+void init_colors(void);
+void byte_color_on(intmax_t address, char c);
+void byte_color_off(intmax_t address, char c);
+void address_color_on(intmax_t address);
+void address_color_off(intmax_t address);
