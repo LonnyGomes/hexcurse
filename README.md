@@ -1,5 +1,6 @@
 hexcurse v1.58
 =====================================
+[![Build Status](https://travis-ci.org/Kerrigan29a/hexcurse.svg)](https://travis-ci.org/Kerrigan29a/hexcurse)
 ![hexcurse screenshot](http://lonnygomes.github.io/screenshots/hexcurse2-ss.jpg)
 
 Bug reports: https://github.com/LonnyGomes/hexcurse/issues
