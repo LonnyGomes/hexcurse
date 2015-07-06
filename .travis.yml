@@ -10,4 +10,4 @@ os:
 sudo: false
 
 script:
-    - ./configure && make && make install
+    - autoreconf -i -f && ./configure && make && make install
