@@ -1,0 +1,13 @@
+language: c
+compiler:
+    - gcc
+    - clang
+os:
+    - linux
+    - osx
+
+# Container-based infrastructure
+sudo: false
+
+script:
+    - autoreconf -i -f && ./configure --prefix=$(pwd)/build && make && make install

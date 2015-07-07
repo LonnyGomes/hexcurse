@@ -83,6 +83,7 @@ int main(int argc, char *argv[])			/* main program       */
     use_env(TRUE);					/* use env values     */
     slk_init(0);					/* init menu bar      */
     init_screen();					/* init visuals       */
+    init_colors();
 
     if ((COLS < MIN_COLS) || (LINES < MIN_LINES))	/* screen's too small */
     {

@@ -51,7 +51,9 @@ void outline(FILE *fp, off_t linenum)
     wclrtoeol(windows->ascii);
 
     /*print line's address*/
+    address_color_on((intmax_t)(linenum * BASE));
     wprintw(windows->address, (printHex) ? "%0*jX ":"%0*jd ", MIN_ADDR_LENGTH, (intmax_t)(linenum * BASE));
+    address_color_off((intmax_t)(linenum * BASE));
 
     rewind(fp);									/* reset the file ptr */
     fseeko(fp, (linenum * BASE), 0);				/* set new pos for fp */
@@ -63,13 +65,17 @@ void outline(FILE *fp, off_t linenum)
 			wattron(windows->ascii, A_BOLD);
 			wattron(windows->hex, A_BOLD);
 		}
+        byte_color_on((linenum * BASE) + i, c);
 		wprintw(windows->hex, "%02X ", c);		/* print out hex char */
 		if (USE_EBCDIC)
 			wprintw(windows->ascii, "%c", EBCDIC[c]);/* print EBCDIC char */
 		else									/* print ASCII  char */
-            wprintw(windows->ascii, (isprint(c)) ? "%c":".", c); 
-	wattroff(windows->ascii, A_BOLD);
-	wattroff(windows->hex, A_BOLD);
+            wprintw(windows->ascii, (isprint(c)) ? "%c":".", c);
+        byte_color_off((linenum * BASE) + i, c);
+        if (tmp[i] != -1) {
+            wattroff(windows->ascii, A_BOLD);
+            wattroff(windows->hex, A_BOLD);
+        }
     }
 }
 

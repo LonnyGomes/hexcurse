@@ -169,6 +169,7 @@ RETSIGTYPE checkScreenSize(int sig)
     clearScreen(windows);
     endwin();
     init_screen();                                      /* init visuals       */
+    init_colors();
 
     slk_clear();                                        /* init menu bar      */
     slk_restore();                                      /* restore bottom menu*/
