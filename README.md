@@ -1,6 +1,6 @@
 hexcurse v1.58
 =====================================
-[![Build Status](https://travis-ci.org/lonnygomes/hexcurse.svg)](https://travis-ci.org/lonnygomes/hexcurse)
+[![Build Status](https://travis-ci.org/LonnyGomes/hexcurse.svg?branch=master)](https://travis-ci.org/LonnyGomes/hexcurse)
 
 ![hexcurse screenshot](http://lonnygomes.github.io/screenshots/hexcurse2-ss.jpg)
 
