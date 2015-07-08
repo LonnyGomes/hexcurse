@@ -39,3 +39,21 @@ Usage
         -o outfile  Write output to outfile by default
         -? | -help  Display usage and version of hexcurse program
         [-i] infile Read from data from infile (-i required if not last argument)
+
+#### Keyboard shortcuts
+
+```
+│ CTRL+?    Help     - help screen
+│ CTRL+S    Save     - saves the current file open
+│ CTRL+O    Open     - opens a new file
+│ CTRL+G    Goto     - goto a specified address
+│ CTRL+F    Find     - search for a hex/ascii value
+│ CTRL+A    HexAdres - toggle between hex/decimal address
+│ TAB       Hex Edit - toggle between hex/ASCII windows
+│ CTRL+Q    Quit     - exit out of the program
+│ CTRL+U    Page up  - scrolls one screen up
+│ CTRL+D    Page down- scrolls one screen down
+│ CTRL+Z    Undo     - reverts last modification
+│ CTRL+T    Home     - returns to the top of the file
+│ CTRL+B    End      - jumps to the bottom of the file
+```
