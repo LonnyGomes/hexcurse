@@ -656,6 +656,7 @@ int wacceptch(WINS *win, off_t len)
 
 	case CTRL_AND('?'):
 	case CTRL_AND('h'):
+	case CTRL_AND('p'):
 	case KEY_F(1):					/* if F1, ^?, ^h...   */
 		getyx(Winds, row, col);			/* current location   */
 
