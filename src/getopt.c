@@ -30,17 +30,8 @@
 #undef opterr
 #undef optopt
 #undef optind
-#undef alloca
 
-/* The following modification was submited by Claudio Fanin.  This change *
- * enables hexcurse to be compiled with SGI's proprietary compiler        */
-#ifdef _SGIAPI
 #include <alloca.h>
-#endif
-#ifndef __alloca
-#define __alloca      alloca
-#endif
-/* end of modification */
 
 #ifdef HAVE_OPTIND
 extern char* optarg;
@@ -85,7 +76,7 @@ exchange (argv)
      char **argv;
 {
   int nonopts_size = (last_nonopt - first_nonopt) * sizeof (char *);
-  char **temp = (char **) __alloca (nonopts_size);
+  char **temp = (char **) alloca (nonopts_size);
 
   /* Interchange the two blocks of data in ARGV.  */
 
