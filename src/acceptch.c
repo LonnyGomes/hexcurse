@@ -125,7 +125,7 @@ int wacceptch(WINS *win, off_t len)
 		}
 		else
 		{
-			short int str = questionWin("Do you want to save changes? (y/n)");
+			short int str = questionWin("Do you want to save changes? (y/n/c)");
 			if (str == 'Y' || str == 'y')
 			{
 				if (savefile(win) == 0)
@@ -134,6 +134,10 @@ int wacceptch(WINS *win, off_t len)
 			else if (str == 'N' || str == 'n')
 			{
 				shouldExit = true;
+			}
+			else if (str == 'C' || str == 'c')
+			{
+				continue;
 			}
 		}
 		break;
