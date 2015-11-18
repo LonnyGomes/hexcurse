@@ -1,4 +1,17 @@
-Current version: hexcurse 1.58 (02.26.2014)
+Current version: hexcurse 1.60.0 (11.17.2015)
+ * changed version scheme to match semver standards
+ * added cancel option when exiting, contributed by @NnerKao (#20)
+ * used malloc() and free() instead of alloca(), contributed by @fornwall (#18)
+ * added color support, contributed by @Kerrigan29a (#17)
+ * fixed bug #13 where running hexcurse with no arguments segfaults
+ * added travis support
+ * fixed copyright differences (#8)
+ * fixed bug #9 where hexcurse would exit after a failed save, contributed by @imrivera
+ * fixed manpage formatting issues, contributed by @errge (#7)
+ * fixed issue where hexcurse wasn't properly responding to signals, contributed by @errge (#6)
+ * added support for long paths and large file support - contribute by @imrivera (#5)
+ 
+hexcurse 1.58 (02.26.2014)
  * Incorporated pull request by Ignacio Martínez
  <ignacio.martinez.rivera@gmail.com> which enables large file support
 
