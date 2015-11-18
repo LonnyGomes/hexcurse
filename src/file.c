@@ -98,7 +98,7 @@ void print_usage()
 {
     char *ver = HVERSION; 
 
-    printf("hexcurse, version %s by FishMoth (jewfish and armoth)\n",ver);
+    printf("hexcurse, version %s by James Stephenson and Lonny Gomes\n",ver);
     printf("\nusage: hexcurse [-?|help] [-a] [-r rnum] [-o outputfile] "); 
     printf("[[-i] infile]\n\n");
     printf("    -a\t\tOutput addresses in decimal format initially\n");
