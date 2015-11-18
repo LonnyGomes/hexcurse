@@ -183,7 +183,7 @@ RETSIGTYPE checkScreenSize(int sig)
     ascii_outline_width =   BASE + 2;
     ascii_win_width     =   BASE;
     maxlines		=   maxLines((fpIN != NULL) ? maxLoc(fpIN) : 0);
-    currentLine		=   0;
+    currentLine		=   LastLoc/BASE;
     SIZE_CH		=   TRUE;
                                                         /* check for term size*/
     if ((COLS < MIN_COLS) || (LINES < MIN_LINES))	
@@ -207,21 +207,47 @@ RETSIGTYPE checkScreenSize(int sig)
     {
 	init_fkeys();                                   /* define menu bar    */
 	init_menu(windows);                             /* init windows       */
+	mvwaddch(windows->scrollbar, 1, 0, ACS_CKBOARD);
 	wmove(windows->hex,0,0);
 	if (fpIN)					/* if a file is open  */
 	{
+	    int newRow = 0;
+	    int newTop = currentLine;
+	    if((maxlines - currentLine) <= MAXY)        /* if at the last page*/
+	    {
+		newTop = maxlines-MAXY;
+		newRow = MAXY-(maxlines - currentLine);
+	    }
 	    for (count = 0; count <= MAXY && count <= maxLines(maxLoc(fpIN)); 
 		 count++)
-		outline(fpIN, count);
+	    {
+		wmove(windows->hex, count, 0);
+		outline(fpIN, newTop++);
+	    }
 
-	    mvwprintw(windows->cur_address, 0, 0, "%0*d", MIN_ADDR_LENGTH, 0);
-	    wmove(windows->hex,0,0);
+	    mvwprintw(windows->cur_address, 0, 0, (printHex)?"%0*X":"%0*d", MIN_ADDR_LENGTH, LastLoc);
+	    if (editHex)
+	    {
+		wmove(windows->hex, newRow, (LastLoc-currentLine*BASE)*3);
+	    }
+	    else 
+	    {
+		wmove(windows->ascii, newRow, LastLoc-currentLine*BASE);
+	    }
 	}
 
 	refreshall(windows);
         wnoutrefresh(windows->cur_address);
+	scrollbar(windows, LastLoc, maxlines);
 	/* this next refresh is to put the cursor in the correct window */
-        wnoutrefresh(windows->hex);
+	if (editHex)
+	{
+	    wnoutrefresh(windows->hex);
+	}
+	else
+	{
+	    wnoutrefresh(windows->ascii);
+	}
 	doupdate();
     }
 }
