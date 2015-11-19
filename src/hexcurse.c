@@ -217,9 +217,13 @@ off_t parseArgs(int argc, char *argv[])
         fpINfilename = strdup(argv[0]);
     }
 
-    if (fpINfilename && strcmp(fpINfilename, ""))
+    if (fpINfilename == NULL) {
+        print_usage();
+        exit(-1);
+    } else if (fpINfilename && strcmp(fpINfilename, "")) {
         if ((fpIN = fopen(fpINfilename, "r")) == NULL)
             exit_err("Could not open file");
+    }
 
     return ((fpIN != NULL) ? maxLoc(fpIN):0);		/* return file length */
 }
