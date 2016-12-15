@@ -4,6 +4,7 @@ hexcurse v1.60.0
 
 ![hexcurse screenshot](http://lonnygomes.github.io/screenshots/hexcurse2-ss.jpg)
 
+[![Build Status](https://travis-ci.org/Kerrigan29a/hexcurse.svg)](https://travis-ci.org/Kerrigan29a/hexcurse)
 Bug reports: https://github.com/LonnyGomes/hexcurse/issues
 
 
