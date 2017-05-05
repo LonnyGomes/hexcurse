@@ -235,10 +235,9 @@ off_t parseArgs(int argc, char *argv[])
 \********************************************************/
 int getMinimumAddressLength(off_t len)
 {
-        char buffer[1];
         int min_address_length;
         
-        min_address_length = snprintf(buffer, 1, "%jd", (intmax_t)len);
+        min_address_length = snprintf(NULL, 0, "%jd", (intmax_t)len);
         
         /* At least 8 characters wide */
         return min_address_length > 8 ? min_address_length : 8;
