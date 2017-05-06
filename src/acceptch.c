@@ -297,6 +297,7 @@ int wacceptch(WINS *win, off_t len)
 		}
 		else
 		    currentLine -= (2*MAXY);
+                /* fall through */
 
 	case CTRL_AND('d'):
 	case KEY_PGDN:					/* if KEY_PGDN...     */
