@@ -9,7 +9,7 @@ Bug reports: https://github.com/LonnyGomes/hexcurse/issues
 
 Description
 -----------
-Hexcurse is a curses-base hex editing utility that can open, edit, and save files, editing both the hexadecimal and decimal values.
+Hexcurse is a curses-based hex editing utility that can open, edit, and save files, editing both the hexadecimal and decimal values.
 
 It was written by [Lonny Gomes](https://twitter.com/lonnygomes) and [James Stephenson](https://plus.google.com/u/0/103174459258175070784/about) but we haven't maintained it for some time. We recently saw an old tarball of the code floating around the net and thought it would be good to start maintaining the codebase again.
 
@@ -33,9 +33,9 @@ Usage
 
     usage: hexcurse [-?|help] [-a] [-r rnum] [-o outputfile] [[-i] infile]
 
-        -a      Output addresses in decimal format initially
-        -e      Output characters in EBCDIC format rather than ASCII
-        -r rnum Resize the display to "rnum" bytes wide
+        -a          Output addresses in decimal format initially
+        -e          Output characters in EBCDIC format rather than ASCII
+        -r rnum     Resize the display to "rnum" bytes wide
         -o outfile  Write output to outfile by default
         -? | -help  Display usage and version of hexcurse program
         [-i] infile Read from data from infile (-i required if not last argument)
