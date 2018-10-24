@@ -44,7 +44,6 @@ int wacceptch(WINS *win, off_t len)
     off_t cl,						/* current loc in file*/
 	  gotoLoc = 0,					/* goto location      */
 	  lastLine = 0,					/* line b4 LastLine   */
-	  currentLine = 0,				/* current line value */
 	  row = 0;
 
     char *gotoLocStr,					/* convert to gotoLoc */
@@ -93,13 +92,9 @@ int wacceptch(WINS *win, off_t len)
 
 	if (SIZE_CH)					/* if win size changed*/
 	{
-	    cl=row=col  = 0;
-	    eol         = (BASE * 3) - 1;
-	    editHex     = TRUE;
-	    Winds       = win->hex;
-	    /*cl = LastLoc;*/
-	    currentLine = 0;
-	    /*maxlines = maxLines(len);*/
+            eol         = (editHex) ? (BASE * 3) - 1 : BASE;
+            Winds       = (editHex) ? win->hex : win->ascii;
+            cl = LastLoc;
 	    SIZE_CH = FALSE;
 	}
 
@@ -400,7 +395,7 @@ int wacceptch(WINS *win, off_t len)
 	case CTRL_AND('b'):
 	case KEY_END:					/* goto end of file   */
 		if (cursorLoc(currentLine, col, editHex, BASE)==maxLoc(fpIN)-1)
-		    break;				/* alread at oef      */
+		    break;				/* already at eof     */
 		
 		/* if there's more than 1 screen, move to the last screenfull */
 		if ((maxlines - currentLine) >= MAXY)	/*if more than 1 scrn */
