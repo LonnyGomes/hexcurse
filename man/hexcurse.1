@@ -1,131 +1,128 @@
 .\" to process use the following command
-.\" groff -man -Tascii manpagename.1
-.TH HEXCURSE 1 "22 December 2003"
-.SH NAME
-hexcurse \- an ncurses-based hex editor
-.SH SYNOPSIS
-.B hexcurse
-[
-.B \-? " | " \-help
-] [
-.B \-a
-] [
-.B \-r
-.I rnum
-] [
-.B \-o
-.I outputfile
-] [ [
-.BR \-i
-]
-.I inputfile
-]
-.SH DESCRIPTION
-.B hexcurse
-is an ncurses-based hexeditor utility that is able to open, modify, and save a file to disk while providing useful editing and searching options.
-.SH OPTIONS
-.TP 15
-.B \-? " | " \-help
+.\" groff -mandoc -Tascii manpagename.1
+.Dd May 5, 2019
+.Dt HEXCURSE 1
+.Os
+.Sh NAME
+.Nm hexcurse
+.Nd an ncurses-based hex editor
+.Sh SYNOPSIS
+.Nm hexcurse
+.Op Fl \&? | Fl help
+.Op Fl a
+.Op Fl r Ar rnum
+.Op Fl o Ar outputfile
+.Op Oo Fl i Oc Ar inputfile
+.Sh DESCRIPTION
+.Nm
+is an ncurses-based hexeditor utility that is able to open, modify, and save a
+file to disk while providing useful editing and searching options.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl \&? | Fl help
 Prints out the command usage info
-.TP 15
-.B -a
+.It Fl a
 Specifies the addresses to be output in decimal format initially.
-.TP 15
-.BI \-r \ rnum
-Specifies the number of characters per line that the hexeditor should output.  If
-.I rnum
+.It Fl r Ar rnum
+Specifies the number of characters per line that the hexeditor should output.
+If
+.Ar rnum
 is either less than 1 or greater than the columns of the current terminal,
-.B hexcurse
+.Nm
 will fill the terminal width, just as if the
-.B \-r
+.Fl r
 was not specified.
-.TP 15
-.BI \-o \ outputfile
+.It Fl o Ar outputfile
 Specifies the output file to be written to by default.
-.TP 15
-.BI [ \-i ] \ inputfile
+.It Oo Fl i Oc Ar inputfile
 Specifies the input file to be read in.
-.B \-i
+.Fl i
 is not needed if
-.I inputfile
+.Ar inputfile
 is the last argument on the line.
-.SH INTERACTIVE OPTIONS
-.TP 15
-.B F1 | ctrl+?
+.El
+.Sh INTERACTIVE OPTIONS
+.Bl -tag -width Ds
+.It Ic F1 | ctrl+?
 Shows key command help.
-.TP 15
-.B F2 | ctrl+s
+.It Ic F2 | ctrl+s
 Save the current file.
-.TP 15
-.B F3 | ctrl+o
+.It Ic F3 | ctrl+o
 Opens a file.
-.TP 15
-.B F4 | ctrl+g
-Goto a certain location in the current file.  Depending on which way the addresses are being viewed at the moment, the search will behave differently.  If the addresses are currently in hex format, the search will search as if the input was given in hexadecimal format.  If the addresses are in decimal format, the function will search for the address in decimal.
-.TP 15
-.B F5 | ctrl+f
-Search for a certain string in the current file.  Depending on which window the user is currently editing in, this search will behave differently.  If editing in the hex window, the input should only be in hexadecimal, and it will search for the hexadecimal "string."  If the current editing window is the ASCII window, the input should be ASCII characters, and the search will find that ASCII string in the file.
-.TP 15
-.B F6 | ctrl+a
+.It Ic F4 | ctrl+g
+Goto a certain location in the current file.
+Depending on which way the addresses are being viewed at the moment,
+the search will behave differently.
+If the addresses are currently in hex format,
+the search will search as if the input was given in hexadecimal format.
+If the addresses are in decimal format,
+the function will search for the address in decimal.
+.It Ic F5 | ctrl+f
+Search for a certain string in the current file.
+Depending on which window the user is currently editing in,
+this search will behave differently.
+If editing in the hex window, the input should only be in hexadecimal,
+and it will search for the hexadecimal
+.Dq string .
+If the current editing window is the ASCII window,
+the input should be ASCII characters,
+and the search will find that ASCII string in the file.
+.It Ic F6 | ctrl+a
 Switch between hexadecimal address values and decimal address values.
-.TP 15
-.B F7 | TAB
+.It Ic F7 | TAB
 Switch between the hexadecimal and ASCII editing windows.
-.TP 15
-.B F8 | ctrl+q | ctrl+x
+.It Ic F8 | ctrl+q | ctrl+x
 Exit out of the program.
-.TP 15
-.B Page Up | ctrl+u
-Scroll one 'page' up.
-.TP 15
-.B Page Down | ctrl+d
-Scroll one 'page' down.
-.TP 15
-.B Home | ctrl+t
+.It Ic Page\ Up | ctrl+u
+Scroll one
+.Sq page
+up.
+.It Ic Page\ Down | ctrl+d
+Scroll one
+.Sq page
+down.
+.It Ic Home | ctrl+t
 Returns to the top of the file.
-.TP 15
-.B End | ctrl+b
+.It Ic End | ctrl+b
 Jumps to the bottom of the file.
-.TP 15
-.B ctrl+z
-Undo the last modification.  Can be used multiple times.
-.TP 15
-.B Esc
+.It Ic ctrl+z
+Undo the last modification.
+Can be used multiple times.
+.It Ic Esc
 Escapes out of the save, open, goto, and find prompts.
-.SH SEE ALSO
-.BR hexdump (1)
-,
-.BR ncurses (3)
-.SH AUTHORS
+.El
+.Sh SEE ALSO
+.Xr hexdump 1 ,
+.Xr ncurses 3
+.Sh AUTHORS
+.An -nosplit
 The authors of
-.B hexcurse
+.Nm
 are:
-.LP
-.RS
-James Stephenson - https://plus.google.com/u/0/103174459258175070784/about
-.RE
-.RS
-Lonny Gomes - hexcurse dot lonnygomes dot com
-.RE
-.LP
-The current version of this software is always availabe at
-.LP
-.RS
-.I https://github.com/LonnyGomes/hexcurse
-.RE
-.SH BUGS
-On some terminals the function keys will not work.  
-.LP
-Support for resizable terminals is still a bit rudimentary.  At this time, when
-the terminal is resized, the cursor is positioned at the beginning of the file.
-This will be corrected in the next release.  There is also an issue where the
-labels on the bottom of the screen do not resize correctly.  A fix for the
-latter is in the works.
-.LP
+.Bl -item
+.It
+.An James Stephenson :
+.Lk https://plus.google.com/u/0/103174459258175070784/about
+.It
+.An Lonny Gomes : Aq Mt hexcurse@lonnygomes.com
+.El
+.Pp
+The current version of this software is always available at
+.Lk https://github.com/LonnyGomes/hexcurse .
+.Sh BUGS
+On some terminals the function keys will not work.
+.Pp
+Support for resizable terminals is still a bit rudimentary.
+At this time, when the terminal is resized,
+the cursor is positioned at the beginning of the file.
+This will be corrected in the next release.
+There is also an issue where
+the labels on the bottom of the screen do not resize correctly.
+A fix for the latter is in the works.
+.Pp
 To report a bug or problem, please e-mail:
-.LP
-.RS
-devel@jewfish.net
-.RE
-.SH TODO
-When we get the time, we would like to implement the ability to insert and delete data from the file.  Please e-mail us with any additional suggestions.
+.Mt devel@jewfish.net
+.Sh TODO
+When we get the time,
+we would like to implement the ability to insert and delete data from the file.
+Please e-mail us with any additional suggestions.
