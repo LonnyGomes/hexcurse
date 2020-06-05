@@ -179,7 +179,7 @@ off_t parseArgs(int argc, char *argv[])
     int val;						/* counters, etc.     */
 
 							/* get args           */
-    while ((val = hgetopt(argc, argv, "a:i:o:r:e")) != -1) 
+    while ((val = hgetopt(argc, argv, "ai:o:r:e")) != -1)
     {
 	switch (val)					/* test args          */
         {
