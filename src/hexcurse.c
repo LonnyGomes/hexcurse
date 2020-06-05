@@ -186,13 +186,13 @@ off_t parseArgs(int argc, char *argv[])
             case 'a':	printHex = FALSE;		/* decimal addresses  */
                         break;
 							/* infile             */
-	    case 'i':	free(fpINfilename);
-			fpINfilename = strdup(optarg);
-			break;
+            case 'i':	free(fpINfilename);
+                        fpINfilename = strdup(optarg);
+                        break;
 							/* outfile            */
-	    case 'o':   free(fpOUTfilename);
-			fpOUTfilename = strdup(optarg);
-			break;
+            case 'o':   free(fpOUTfilename);
+                        fpOUTfilename = strdup(optarg);
+                        break;
 
             case 'r':   resize = atoi(optarg);		/* don't resize screen*/
                         break;
@@ -201,11 +201,11 @@ off_t parseArgs(int argc, char *argv[])
                         break;
 							/* help/invalid args  */
 							/* help/invalid args  */
-	    case '?':	print_usage();			/* output help        */
+            case '?':	print_usage();			/* output help        */
                         if ((optopt == 'h') || (optopt == '?'))
-			    exit(0);			/* exit               */
-			else				/* illegal option     */
-			    exit(-1);
+                           exit(0);			/* exit               */
+            else				/* illegal option     */
+                        exit(-1);
         }
     }
     argc -= optind;
