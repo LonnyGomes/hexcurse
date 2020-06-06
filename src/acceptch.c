@@ -622,10 +622,13 @@ int wacceptch(WINS *win, off_t len)
 							/*switch the underline*/
 		getyx(Winds, row, col);			/* current location   */
 		wattrset((editHex) ? win->ascii : win->hex, A_NORMAL);
-		mvwprintw((editHex) ? win->ascii : win->hex, row,
-			  (editHex) ? col/3 : col*3, 
-			  (editHex) ? "%c": "%02X", 
-			  (editHex) ? ((isprint(curVal))?curVal : '.'):curVal);
+
+        if (editHex)
+           mvwprintw(win->ascii, row, col/3, "%c",
+               (USE_EBCDIC) ? EBCDIC[curVal] : (isprint(curVal)) ? curVal : '.');
+        else
+           mvwprintw(win->hex, row, col*3, "%02X", curVal);
+
 		wnoutrefresh((editHex) ? win->ascii : win->hex);
 		if (editHex)				/* already in hex win */
 		{
@@ -767,10 +770,13 @@ int wacceptch(WINS *win, off_t len)
 		wattron((editHex) ? win->ascii : win->hex,
 		  (inHexList(cursorLoc(lastLine, lastCol, editHex, BASE))) ?
 		  A_BOLD : A_NORMAL);
-		mvwprintw((editHex) ? win->ascii : win->hex, lastRow, 
-			  (editHex) ? lastCol/3 : lastCol*3, 
-			  (editHex) ? "%c" : "%02X", 
-			  (editHex) ? (isprint(curVal)) ? curVal : '.': curVal);
+
+        if (editHex)
+           mvwprintw(win->ascii, lastRow, lastCol/3, "%c",
+               (USE_EBCDIC) ? EBCDIC[curVal] : (isprint(curVal)) ? curVal : '.');
+        else
+           mvwprintw(win->hex, lastRow, lastCol*3, "%02X", curVal);
+
 		wmove(Winds, row, col);
 		wattrset((editHex) ? win->ascii : win->hex, A_NORMAL);
 		wnoutrefresh((editHex) ? win->ascii : win->hex);
@@ -782,10 +788,12 @@ int wacceptch(WINS *win, off_t len)
 
 	    curVal = getLocVal(cursorLoc(currentLine, col, editHex, BASE));
 
-	    mvwprintw((editHex) ? win->ascii : win->hex, row, 
-		      (editHex) ? col/3 : col*3,  
-		      (editHex) ? "%c" : "%02X", 
-		      (editHex) ? (isprint(curVal)) ? curVal : '.' : curVal); 
+        if (editHex)
+           mvwprintw(win->ascii, row, col/3, "%c",
+               (USE_EBCDIC) ? EBCDIC[curVal] : (isprint(curVal)) ? curVal : '.');
+        else
+           mvwprintw(win->hex, row, col*3, "%02X", curVal);
+
 	    wattrset((editHex) ? win->ascii : win->hex, A_NORMAL);
 	    wnoutrefresh((editHex) ? win->ascii : win->hex);
 	}
