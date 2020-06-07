@@ -35,10 +35,14 @@ void init_colors(void)
 int get_byte_color(intmax_t address, char c)
 {
     UNUSED(address);
-    if (c == 0x00) {
+    if (((unsigned char) c >= 0x20) && ((unsigned char) c <= 0x7E)) {
+        return COLOR_PAIR(8);
+    } else if ((unsigned char) c == 0xFF) {
+        return COLOR_PAIR(2);
+    } else if ((unsigned char) c == 0x00) {
         return COLOR_PAIR(5);
     }
-    return A_NORMAL;
+    return COLOR_PAIR(7);
 }
 
 void byte_color_on(intmax_t address, char c)
