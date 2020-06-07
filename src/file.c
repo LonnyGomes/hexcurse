@@ -103,6 +103,7 @@ void print_usage()
     printf("[[-i] infile]\n\n");
     printf("    -a\t\tOutput addresses in decimal format initially\n");
     printf("    -e\t\tOutput characters in EBCDIC format rather than ASCII\n"); 
+    printf("    -t\tKeep colors defined by terminal\n");
     printf("    -r rnum\tResize the display to \"rnum\" bytes wide\n");
     printf("    -o outfile\tWrite output to outfile by default\n"); 
     printf("    -? | -help\tDisplay usage and version of hexcurse program\n");
