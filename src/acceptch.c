@@ -190,7 +190,11 @@ int wacceptch(WINS *win, off_t len)
 
 	default:					/* if other key...    */
 							/* if key we want...  */
-		if (isprint(key) && ((editHex && isxdigit(key)) || !editHex))
+		if ( (editHex && isxdigit(key)) ||
+		     ( (!editHex && isprint(key)) &&
+		       ( (USE_EBCDIC) ? (ASCII_to_EBCDIC[key]!=NODEF) : TRUE )
+		     )
+		   )
 		{
 		    if ((cl=cursorLoc(currentLine, col, editHex,BASE))< len) 
 		    {   
@@ -223,7 +227,8 @@ int wacceptch(WINS *win, off_t len)
 			    	val = (val - ((val + 16) % 16) + key);
 			}
 			else				/* else...            */
-			    val = key;			/* val is key pressed */
+			         /* val is key pressed */
+			    val = (USE_EBCDIC) ? ASCII_to_EBCDIC[key] : key;
 
 			if (editHex)			/* update ascii win   */
 			{
@@ -781,6 +786,7 @@ int wacceptch(WINS *win, off_t len)
 		wattrset((editHex) ? win->ascii : win->hex, A_NORMAL);
 		wnoutrefresh((editHex) ? win->ascii : win->hex);
 	    }
+
 							/* highlight new char */
 	    wattron((editHex) ? win->ascii : win->hex, A_UNDERLINE);
 	    if (inHexList(cursorLoc(currentLine, col, editHex, BASE)))
