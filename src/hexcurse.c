@@ -27,6 +27,8 @@
 /*#define DEBUG_LLIST*/
 /*#define DEBUG_GOTO*/
 
+FILE *fpIN;
+
 int     BASE, MAXY, resize = 0;
 int     MIN_ADDR_LENGTH;
 hexList *head;						/* linked list struct */
