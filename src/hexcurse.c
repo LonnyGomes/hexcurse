@@ -204,8 +204,8 @@ off_t parseArgs(int argc, char *argv[])
             case '?':	print_usage();			/* output help        */
                         if ((optopt == 'h') || (optopt == '?'))
                            exit(0);			/* exit               */
-            else				/* illegal option     */
-                        exit(-1);
+                        else				/* illegal option     */
+                           exit(-1);
         }
     }
     argc -= optind;
