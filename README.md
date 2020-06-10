@@ -31,7 +31,7 @@ Installation
 Usage
 -----
 
-    usage: hexcurse [-?|help] [-a] [-r rnum] [-o outputfile] [[-i] infile]
+    usage: hexcurse [-?|help] [-a] [-e] [-r rnum] [-o outputfile] [[-i] infile]
 
         -a          Output addresses in decimal format initially
         -e          Output characters in EBCDIC format rather than ASCII
