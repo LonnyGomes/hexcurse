@@ -19,6 +19,9 @@ hexcurse \- an ncurses-based hex editor
 .BR \-i
 ]
 .I inputfile
+] [
+.BR \-c
+I. colorlevel
 ]
 .SH DESCRIPTION
 .B hexcurse
@@ -49,6 +52,21 @@ Specifies the input file to be read in.
 is not needed if
 .I inputfile
 is the last argument on the line.
+.TP 15
+.BI [ \-c ] \ colorlevel
+Specifies the color level.
+.RS 18
+0: no colors
+.RE
+.RS 18
+1: only color for addresses
+.RE
+.RS 18
+2: 1 + color for 00 (default if terminal supports color)
+.RE
+.RS 18
+3: multicolor by FrankSansC
+.RE
 .SH INTERACTIVE OPTIONS
 .TP 15
 .B F1 | ctrl+?

@@ -40,7 +40,8 @@ bool    IN_HELP;					/* if help displayed  */
 int     hex_win_width,
         ascii_win_width,
         hex_outline_width,
-        ascii_outline_width;
+        ascii_outline_width,
+        color_level = 2;
 
 
     /* partial EBCDIC table contributed by Ted (ted@php.net) */
@@ -179,10 +180,18 @@ off_t parseArgs(int argc, char *argv[])
     int val;						/* counters, etc.     */
 
 							/* get args           */
-    while ((val = hgetopt(argc, argv, "ai:o:r:e")) != -1)
+    while ((val = hgetopt(argc, argv, "c:ai:o:r:e")) != -1)
     {
 	switch (val)					/* test args          */
         {
+            case 'c':   color_level = atoi(optarg);
+                        if (color_level<0 || color_level>3)
+                        {
+                            print_usage();
+                            exit(-1);
+                        }
+                        break;
+
             case 'a':	printHex = FALSE;		/* decimal addresses  */
                         break;
 							/* infile             */
