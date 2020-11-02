@@ -204,26 +204,42 @@ int wacceptch(WINS *win, off_t len)
 
 			wattron(win->hex, A_BOLD);
 			wattron(win->ascii, A_BOLD);
-							/* output it          */
-			wprintw(Winds, "%c", editHex ? toupper(key): key);
 
 			tmpval = val;			/* val b4 key press   */
 
 			if (editHex)			/* if in hex win...   */
 			{
-			    if (key >= 65 && key <= 70)	/* get correct val    */
-			    	key -= 7;
-			    else if (key >= 97 && key <= 102)
-			    	key -= 39;
-			    key -= 48;
-			
-			    if ((col % 3) == 0)		/* compute byte val   */
-                            val = (key * 16) + (val % 16);
-			    else if ((col % 3) == 1)
-			    	val = (val - ((val + 16) % 16) + key);
+				short int tmpkey = key;
+
+				if (tmpkey >= 65 && tmpkey <= 70)	/* get correct val    */
+					tmpkey -= 7;
+				else if (tmpkey >= 97 && tmpkey <= 102)
+					tmpkey -= 39;
+				tmpkey -= 48;
+
+				if ((col % 3) == 0)		/* compute byte val */
+				{                  		/* and update color */
+				        				/* first digit hex  */
+					val = (tmpkey * 16) + (val % 16);
+					byte_color_on((row * BASE) + col, val);
+					wprintw(Winds, "%02X", val);
+				}
+				else if ((col % 3) == 1)
+				     {					/* second digit hex */
+				     	val = (val - ((val + 16) % 16) + tmpkey);
+				     	byte_color_on((row * BASE) + col, val);
+				     	wmove(win->hex, row, col-1);
+				     	wprintw(Winds, "%02X", val);
+				     	wmove(win->hex, row, col);
+				     }
 			}
 			else				/* else...            */
-			    val = key;			/* val is key pressed */
+			{
+				val = key;			/* val is key pressed */
+				          			/* output it          */
+				byte_color_on((row * BASE) + col, val);
+				wprintw(Winds, "%c", key);
+			}
 
 			if (editHex)			/* update ascii win   */
 			{
@@ -240,6 +256,7 @@ int wacceptch(WINS *win, off_t len)
 			    wmove(win->ascii, row, col);
 			    wrefresh(win->hex);
 			}
+			byte_color_off((row * BASE) + col, val);
 
 			wattrset(win->hex, A_NORMAL);
 			wattrset(win->ascii, A_NORMAL);
