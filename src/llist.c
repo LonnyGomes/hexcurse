@@ -48,37 +48,24 @@ hexList *deleteNode(hexList *head, off_t loc)
 \********************************************************/	
 hexList *insertItem(hexList *head, off_t loc, int val)
 {
-    if (head == NULL)					/* if NULL create item*/
-    {
-	head = llalloc();                   		/* allocate space     */
-        head->loc = loc;          			/* store current line */
-	head->val = val;				/* store value        */
-        head->next = NULL;				/* make next = NULL   */
-    }
-    else if (head-> loc == loc)
-    {
-	hexList *tmpHead;				/* create new tmp item*/
-	tmpHead  = llalloc();				/* allocate space     */
-	tmpHead->loc = loc;				/* store the location */
-	tmpHead->val = val;				/* store the value    */
-	tmpHead->next = head;				/* point next to head */
-	head = tmpHead;					/* point head to tmp  */
-    }
-    else if (head->loc < loc || head->next == NULL) 	/* recursively call it*/
-    	head->next = insertItem(head->next, loc, val);
-							/* insert into list  */
-    else if (head->next != NULL && head->next->loc >= loc)
-    {
-	hexList *tmpHead;				/* create new tmp item*/
-	tmpHead  = llalloc();				/* allocate space     */
-	tmpHead->loc = loc;				/* store the location */
-	tmpHead->val = val;				/* store the value    */
-	tmpHead->next = head;				/* point next to head */
-	head = tmpHead;					/* point head to tmp  */
-    }
+    hexList *curr = head,
+            *prev = NULL,
+            *newHead = head,
+            *newItem;
 
-    return head;                               		/* return the head    */
-}   
+    while (curr != NULL && loc > curr->loc)  /* iterate until correct */
+    {                                        /* position for loc      */
+        prev = curr;                         /* or end of list        */
+        curr = curr->next;
+    }
+    newItem  = llalloc();                  /* allocate space        */
+    if (prev == NULL) newHead = newItem;   /* new head of list      */
+    else prev->next = newItem;             /* or point previous     */
+    newItem->loc = loc;                    /* store the location    */
+    newItem->val = val;                    /* store the value       */
+    newItem->next = curr;                  /* point next to current */
+    return newHead;
+}
 
 /********************************************************\
  * Description: Search through the linked list for to   *
