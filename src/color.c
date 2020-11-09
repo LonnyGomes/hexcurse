@@ -13,7 +13,7 @@ bool color_enabled;
 void init_colors(void)
 {
     color_enabled = has_colors();
-    if(color_enabled)
+    if(color_enabled && color_level>0)
     {
         start_color();
         init_pair(1, COLOR_BLACK,   COLOR_BLACK);
@@ -35,10 +35,16 @@ void init_colors(void)
 int get_byte_color(intmax_t address, char c)
 {
     UNUSED(address);
-    if (c == 0x00) {
-        return COLOR_PAIR(5);
-    }
-    return A_NORMAL;
+    if ((unsigned char) c == 0x00)
+        return ((color_level>1) ? COLOR_PAIR(5) : A_NORMAL);
+
+    if (color_level>2)
+      if (((unsigned char) c >= 0x20) && ((unsigned char) c <= 0x7E)) {
+          return COLOR_PAIR(8);
+      } else if ((unsigned char) c == 0xFF) {
+          return COLOR_PAIR(2);
+      } else return COLOR_PAIR(7);
+    else return A_NORMAL;
 }
 
 void byte_color_on(intmax_t address, char c)
@@ -66,7 +72,7 @@ void byte_color_off(intmax_t address, char c)
 int get_address_color(intmax_t address)
 {
   UNUSED(address);
-  return COLOR_PAIR(4);
+  return ((color_level>0) ? COLOR_PAIR(4) : A_NORMAL);
 }
 
 void address_color_on(intmax_t address)

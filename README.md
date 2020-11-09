@@ -31,14 +31,19 @@ Installation
 Usage
 -----
 
-    usage: hexcurse [-?|help] [-a] [-r rnum] [-o outputfile] [[-i] infile]
+    usage: hexcurse [-?|help] [-a] [-r rnum] [-o outputfile] [[-i] infile] [-c colorlevel]
 
-        -a          Output addresses in decimal format initially
-        -e          Output characters in EBCDIC format rather than ASCII
-        -r rnum     Resize the display to "rnum" bytes wide
-        -o outfile  Write output to outfile by default
-        -? | -help  Display usage and version of hexcurse program
-        [-i] infile Read from data from infile (-i required if not last argument)
+        -a            Output addresses in decimal format initially
+        -e            Output characters in EBCDIC format rather than ASCII
+        -r rnum       Resize the display to "rnum" bytes wide
+        -o outfile    Write output to outfile by default
+        -? | -help    Display usage and version of hexcurse program
+        [-i] infile   Read from data from infile (-i required if not last argument)
+        -c colorlevel Set the color level:
+                        0: no colors
+                        1: only color for addresses
+                        2: 1 + color for 00 (default if terminal supports color)
+                        3: multicolor by FrankSansC
 
 #### Keyboard shortcuts
 

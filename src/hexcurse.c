@@ -40,7 +40,8 @@ bool    IN_HELP;					/* if help displayed  */
 int     hex_win_width,
         ascii_win_width,
         hex_outline_width,
-        ascii_outline_width;
+        ascii_outline_width,
+        color_level = 2;
 
 
     /* partial EBCDIC table contributed by Ted (ted@php.net) */
@@ -179,20 +180,28 @@ off_t parseArgs(int argc, char *argv[])
     int val;						/* counters, etc.     */
 
 							/* get args           */
-    while ((val = hgetopt(argc, argv, "a:i:o:r:e")) != -1) 
+    while ((val = hgetopt(argc, argv, "c:ai:o:r:e")) != -1)
     {
 	switch (val)					/* test args          */
         {
+            case 'c':   color_level = atoi(optarg);
+                        if (color_level<0 || color_level>3)
+                        {
+                            print_usage();
+                            exit(-1);
+                        }
+                        break;
+
             case 'a':	printHex = FALSE;		/* decimal addresses  */
                         break;
 							/* infile             */
-	    case 'i':	free(fpINfilename);
-			fpINfilename = strdup(optarg);
-			break;
+            case 'i':	free(fpINfilename);
+                        fpINfilename = strdup(optarg);
+                        break;
 							/* outfile            */
-	    case 'o':   free(fpOUTfilename);
-			fpOUTfilename = strdup(optarg);
-			break;
+            case 'o':   free(fpOUTfilename);
+                        fpOUTfilename = strdup(optarg);
+                        break;
 
             case 'r':   resize = atoi(optarg);		/* don't resize screen*/
                         break;
@@ -201,11 +210,11 @@ off_t parseArgs(int argc, char *argv[])
                         break;
 							/* help/invalid args  */
 							/* help/invalid args  */
-	    case '?':	print_usage();			/* output help        */
+            case '?':	print_usage();			/* output help        */
                         if ((optopt == 'h') || (optopt == '?'))
-			    exit(0);			/* exit               */
-			else				/* illegal option     */
-			    exit(-1);
+                           exit(0);			/* exit               */
+            else				/* illegal option     */
+                        exit(-1);
         }
     }
     argc -= optind;

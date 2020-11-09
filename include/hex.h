@@ -100,6 +100,7 @@ extern int  SIZE_CH;
 extern bool USE_EBCDIC;
 extern char EBCDIC[256];
 extern bool color_enabled;
+extern int  color_level;
 
 /* macros */
 /*#define currentLoc(line, col) ((line) * BASE +((col)/3)) */
