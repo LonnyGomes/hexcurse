@@ -245,6 +245,9 @@ int wacceptch(WINS *win, off_t len)
 			wattrset(win->ascii, A_NORMAL);
 			
 							/* edit list          */
+							/* first add the original value for save+undo */
+			if (searchList(head, cl) == -1) head = insertItem(head, cl, tmpval);
+							/* then add the current value */
 			head = insertItem(head, cl, val);
 		/* calloc() is used because it NULLS out all returned memory  */
     			tmpStack = (hexStack *) calloc(1, sizeof(hexStack));
