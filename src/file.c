@@ -27,23 +27,30 @@
 void outline(FILE *fp, off_t linenum)
 {
     int i, c, tmp[BASE];					/* holds char values  */
+    bool bold[BASE];
     hexList *tmpHead = head;					/* tmp linklist head  */
+    off_t locbase = linenum * BASE;
 
-    for (i = 0; i < BASE; i++)					/* set vals to EOF    */
-		tmp[i] = -1;
-
-    while (tmpHead != NULL && tmpHead->loc < (linenum * BASE))
+    while (tmpHead != NULL && tmpHead->loc < locbase)
 		tmpHead = tmpHead->next;				/* advance temp head  */
 
     for (i = 0; i < BASE; i++) 
 	{
-		while (tmpHead != NULL && (tmpHead->loc < ((linenum * BASE) + i)))
+		while (tmpHead != NULL && (tmpHead->loc < (locbase + i)))
 			tmpHead = tmpHead->next;
 		
-		if (tmpHead != NULL && (tmpHead->loc == ((linenum * BASE) + i)))
+		if (tmpHead != NULL && (tmpHead->loc == (locbase + i)))
 		{										/*store val from llist*/
 			tmp[i] = tmpHead->val;
 			tmpHead = tmpHead->next;
+			if (tmpHead != NULL && tmpHead->loc == (locbase + i))
+			     bold[i] = TRUE;       /* if there is at least 2 values set bold */
+			else bold[i] = FALSE;
+		}
+		else
+		{
+			tmp[i] = -1;        /* set val to EOF    */
+			bold[i] = FALSE;
 		}
     }
 
@@ -51,28 +58,30 @@ void outline(FILE *fp, off_t linenum)
     wclrtoeol(windows->ascii);
 
     /*print line's address*/
-    address_color_on((intmax_t)(linenum * BASE));
-    wprintw(windows->address, (printHex) ? "%0*jX ":"%0*jd ", MIN_ADDR_LENGTH, (intmax_t)(linenum * BASE));
-    address_color_off((intmax_t)(linenum * BASE));
+    address_color_on((intmax_t)(locbase));
+    wprintw(windows->address, (printHex) ? "%0*jX ":"%0*jd ", MIN_ADDR_LENGTH, (intmax_t)(locbase));
+    address_color_off((intmax_t)(locbase));
 
     rewind(fp);									/* reset the file ptr */
-    fseeko(fp, (linenum * BASE), 0);				/* set new pos for fp */
+    fseeko(fp, locbase, 0);				/* set new pos for fp */
 
     for (i = 0; i < BASE && (c = getc(fp)) != EOF; i++)
     {
 		if (tmp[i] != -1) 						/* while not EOF      */
-		{	c = tmp[i];							/* store val in c     */
+			c = tmp[i];							/* store val in c     */
+		if (bold[i])
+		{
 			wattron(windows->ascii, A_BOLD);
 			wattron(windows->hex, A_BOLD);
 		}
-        byte_color_on((linenum * BASE) + i, c);
+        byte_color_on(locbase + i, c);
 		wprintw(windows->hex, "%02X ", c);		/* print out hex char */
 		if (USE_EBCDIC)
 			wprintw(windows->ascii, "%c", EBCDIC[c]);/* print EBCDIC char */
 		else									/* print ASCII  char */
             wprintw(windows->ascii, (isprint(c)) ? "%c":".", c);
-        byte_color_off((linenum * BASE) + i, c);
-        if (tmp[i] != -1) {
+        byte_color_off(locbase + i, c);
+        if (bold[i]) {
             wattroff(windows->ascii, A_BOLD);
             wattroff(windows->hex, A_BOLD);
         }
@@ -401,20 +410,4 @@ int getLocVal(off_t loc)
 
     fseeko(fpIN, loc, SEEK_SET);				/* goto location      */
     return(fgetc(fpIN));
-}
-
-/********************************************************\
- * Description: checks if a loc is in the linked list   *
- * Returns:     returns TRUE if loc is in the llist     *
-\********************************************************/
-bool inHexList(off_t loc)
-{
-    hexList *tmpHead = head;				/* tmp linklist head  */
-
-    while (tmpHead != NULL && (tmpHead->loc < loc))
-	tmpHead = tmpHead->next;
-    if (tmpHead != NULL && (tmpHead->loc == loc))
-	return(TRUE);
-    else
-	return(FALSE);
 }

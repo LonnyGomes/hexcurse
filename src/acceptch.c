@@ -650,7 +650,7 @@ int wacceptch(WINS *win, off_t len)
 
 		getyx(Winds, row, col);			/* current location   */
 		/* re-bold char if the value over the cursor is modified      */
-		if (inHexList(cursorLoc(currentLine, col, editHex, BASE))) 
+		if (countList(head, cursorLoc(currentLine, col, editHex, BASE)) > 1)
 		{
 		    wattron((editHex) ? win->hex : win->ascii, A_BOLD);
 		    mvwprintw((editHex) ? win->hex : win->ascii , row, col, 
@@ -703,7 +703,7 @@ int wacceptch(WINS *win, off_t len)
 		
 		    getyx(Winds, row, col);
 
-   		    if ((searchList(head, cl)) != -1)
+   		    if (countList(head, cl) > 1)
 		    {	
 			wattron(win->hex, A_BOLD);
 			wattron(win->ascii, A_BOLD);
@@ -768,7 +768,7 @@ int wacceptch(WINS *win, off_t len)
 	        curVal = getLocVal(cursorLoc(lastLine, lastCol, editHex, BASE));
 		wattrset((editHex) ? win->ascii : win->hex, A_NORMAL);
 		wattron((editHex) ? win->ascii : win->hex,
-		  (inHexList(cursorLoc(lastLine, lastCol, editHex, BASE))) ?
+		  (countList(head, cursorLoc(lastLine, lastCol, editHex, BASE)) > 1) ?
 		  A_BOLD : A_NORMAL);
 		mvwprintw((editHex) ? win->ascii : win->hex, lastRow, 
 			  (editHex) ? lastCol/3 : lastCol*3, 
@@ -780,7 +780,7 @@ int wacceptch(WINS *win, off_t len)
 	    }
 							/* highlight new char */
 	    wattron((editHex) ? win->ascii : win->hex, A_UNDERLINE);
-	    if (inHexList(cursorLoc(currentLine, col, editHex, BASE)))
+	    if (countList(head, cursorLoc(currentLine, col, editHex, BASE)) > 1)
 	        wattron((editHex) ? win->ascii : win->hex, A_BOLD);
 
 	    curVal = getLocVal(cursorLoc(currentLine, col, editHex, BASE));

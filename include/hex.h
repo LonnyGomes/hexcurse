@@ -145,7 +145,6 @@ int savefile(WINS *win);
 off_t hexSearch(FILE *fp, int ch[], off_t startfp, int length);
 off_t gotoLine(FILE *fp, off_t currLoc, off_t gotoLoc, off_t maxlines,  WINDOW *windows);
 int getLocVal(off_t loc);
-bool inHexList(off_t loc);
 
 /* getopt.c */
 int hgetopt(int argc, char *const *argv, const char *optstring);
@@ -160,6 +159,7 @@ RETSIGTYPE catchSegfault(int sig);
 hexList *deleteNode(hexList *head, off_t loc);
 hexList *insertItem(hexList *head, off_t loc, int val);
 int searchList(hexList *head, off_t loc);
+off_t countList(hexList *head, off_t loc);
 int writeChanges();
 hexList *freeList(hexList *head);
 

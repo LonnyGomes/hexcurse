@@ -101,6 +101,24 @@ int searchList(hexList *head, off_t loc)
 }
 
 /********************************************************\
+ * Description: Count the number of items for a given   *
+ *      loc in the list and return it                   *
+\********************************************************/
+off_t countList(hexList *head, off_t loc)
+{
+    hexList *curr = head;
+    off_t count = 0;
+
+    while (curr != NULL && curr->loc < loc) curr = curr->next;
+    while (curr != NULL && curr->loc == loc)
+    {
+        count++;
+        curr = curr->next;
+    }
+    return count;
+}
+
+/********************************************************\
  * Description: write the changes to either the current *
  *		file or to a specified output file	*
 \*******************************************************/
