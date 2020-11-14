@@ -99,6 +99,7 @@ extern off_t LastLoc;
 extern int  SIZE_CH;
 extern bool USE_EBCDIC;
 extern char EBCDIC[256];
+extern int ASCII_to_EBCDIC[256];
 extern bool color_enabled;
 
 /* macros */
@@ -119,6 +120,7 @@ extern bool color_enabled;
 #define MIN_COLS        70                      /* screen has to be 70< cols  */
 #define MIN_LINES       7     /* 8 - 1 */       /* the slk crap minuses 1 line*/
 #define KEY_TAB 		9			/* value for the tab key      */
+#define NODEF           0  /* value for not defined characters in ASCII_to_EBCDIC */
 
 #define AlphabetSize (UCHAR_MAX +1)		/* for portability            */
 

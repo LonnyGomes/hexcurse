@@ -190,7 +190,11 @@ int wacceptch(WINS *win, off_t len)
 
 	default:					/* if other key...    */
 							/* if key we want...  */
-		if (isprint(key) && ((editHex && isxdigit(key)) || !editHex))
+		if ( (editHex && isxdigit(key)) ||
+		     ( (!editHex && isprint(key)) &&
+		       ( (USE_EBCDIC) ? (ASCII_to_EBCDIC[key]!=NODEF) : TRUE )
+		     )
+		   )
 		{
 		    if ((cl=cursorLoc(currentLine, col, editHex,BASE))< len) 
 		    {   
@@ -223,7 +227,8 @@ int wacceptch(WINS *win, off_t len)
 			    	val = (val - ((val + 16) % 16) + key);
 			}
 			else				/* else...            */
-			    val = key;			/* val is key pressed */
+			         /* val is key pressed */
+			    val = (USE_EBCDIC) ? ASCII_to_EBCDIC[key] : key;
 
 			if (editHex)			/* update ascii win   */
 			{
@@ -622,10 +627,17 @@ int wacceptch(WINS *win, off_t len)
 							/*switch the underline*/
 		getyx(Winds, row, col);			/* current location   */
 		wattrset((editHex) ? win->ascii : win->hex, A_NORMAL);
-		mvwprintw((editHex) ? win->ascii : win->hex, row,
-			  (editHex) ? col/3 : col*3, 
-			  (editHex) ? "%c": "%02X", 
-			  (editHex) ? ((isprint(curVal))?curVal : '.'):curVal);
+
+		byte_color_on((row * BASE) + col, curVal);
+
+		if (editHex)
+		   mvwprintw(win->ascii, row, col/3, "%c",
+		      (USE_EBCDIC) ? EBCDIC[curVal] : (isprint(curVal)) ? curVal : '.');
+		else
+		   mvwprintw(win->hex, row, col*3, "%02X", curVal);
+
+		byte_color_off((row * BASE) + col, curVal);
+
 		wnoutrefresh((editHex) ? win->ascii : win->hex);
 		if (editHex)				/* already in hex win */
 		{
@@ -705,34 +717,24 @@ int wacceptch(WINS *win, off_t len)
 			wattron(win->hex, A_BOLD);
 			wattron(win->ascii, A_BOLD);
 		    }
+		    byte_color_on((row * BASE) + col, val);
+
                     if (editHex)
 		    {
-                        wmove(win->ascii, row, (col/3));    
-			wprintw(win->ascii, "%c", (USE_EBCDIC) ? EBCDIC[val] :
-			       (isprint(val) ? val : 46));
-                        wmove(win->hex, row, col);
-                        wrefresh(win->ascii);
-
                         wprintw(win->hex, "%02X", val);
                         wmove(win->hex, row, col);      
                         wrefresh(win->hex);
 		    }
 		    else
 		    {
-                        wmove(win->hex, row, (col*3));      
-                        wprintw(win->hex, "%02X", val);
-                        wmove(win->ascii, row, col);
-                        wrefresh(win->hex);
-
 			wprintw(win->ascii, "%c", (USE_EBCDIC) ? EBCDIC[val] :
 			       (isprint(val) ? val : 46));
                         wmove(win->ascii, row, col);    
                         wrefresh(win->ascii);
 		    }
+		    byte_color_off((row * BASE) + col, val);
 		    wattrset(win->hex, A_NORMAL);
 		    wattrset(win->ascii, A_NORMAL);
-
-
 		}
 		break;
 
@@ -767,14 +769,22 @@ int wacceptch(WINS *win, off_t len)
 		wattron((editHex) ? win->ascii : win->hex,
 		  (inHexList(cursorLoc(lastLine, lastCol, editHex, BASE))) ?
 		  A_BOLD : A_NORMAL);
-		mvwprintw((editHex) ? win->ascii : win->hex, lastRow, 
-			  (editHex) ? lastCol/3 : lastCol*3, 
-			  (editHex) ? "%c" : "%02X", 
-			  (editHex) ? (isprint(curVal)) ? curVal : '.': curVal);
+
+		byte_color_on((lastRow * BASE) + lastCol, curVal);
+
+		if (editHex)
+		   mvwprintw(win->ascii, lastRow, lastCol/3, "%c",
+		      (USE_EBCDIC) ? EBCDIC[curVal] : (isprint(curVal)) ? curVal : '.');
+		else
+		   mvwprintw(win->hex, lastRow, lastCol*3, "%02X", curVal);
+
+		byte_color_off((lastRow * BASE) + lastCol, curVal);
+
 		wmove(Winds, row, col);
 		wattrset((editHex) ? win->ascii : win->hex, A_NORMAL);
 		wnoutrefresh((editHex) ? win->ascii : win->hex);
 	    }
+
 							/* highlight new char */
 	    wattron((editHex) ? win->ascii : win->hex, A_UNDERLINE);
 	    if (inHexList(cursorLoc(currentLine, col, editHex, BASE)))
@@ -782,10 +792,16 @@ int wacceptch(WINS *win, off_t len)
 
 	    curVal = getLocVal(cursorLoc(currentLine, col, editHex, BASE));
 
-	    mvwprintw((editHex) ? win->ascii : win->hex, row, 
-		      (editHex) ? col/3 : col*3,  
-		      (editHex) ? "%c" : "%02X", 
-		      (editHex) ? (isprint(curVal)) ? curVal : '.' : curVal); 
+	    byte_color_on((row * BASE) + col, curVal);
+
+	    if (editHex)
+	       mvwprintw(win->ascii, row, col/3, "%c",
+	          (USE_EBCDIC) ? EBCDIC[curVal] : (isprint(curVal)) ? curVal : '.');
+	    else
+	       mvwprintw(win->hex, row, col*3, "%02X", curVal);
+
+	    byte_color_off((row * BASE) + col, curVal);
+
 	    wattrset((editHex) ? win->ascii : win->hex, A_NORMAL);
 	    wnoutrefresh((editHex) ? win->ascii : win->hex);
 	}
