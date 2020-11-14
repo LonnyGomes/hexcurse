@@ -717,34 +717,24 @@ int wacceptch(WINS *win, off_t len)
 			wattron(win->hex, A_BOLD);
 			wattron(win->ascii, A_BOLD);
 		    }
+		    byte_color_on((row * BASE) + col, val);
+
                     if (editHex)
 		    {
-                        wmove(win->ascii, row, (col/3));    
-			wprintw(win->ascii, "%c", (USE_EBCDIC) ? EBCDIC[val] :
-			       (isprint(val) ? val : 46));
-                        wmove(win->hex, row, col);
-                        wrefresh(win->ascii);
-
                         wprintw(win->hex, "%02X", val);
                         wmove(win->hex, row, col);      
                         wrefresh(win->hex);
 		    }
 		    else
 		    {
-                        wmove(win->hex, row, (col*3));      
-                        wprintw(win->hex, "%02X", val);
-                        wmove(win->ascii, row, col);
-                        wrefresh(win->hex);
-
 			wprintw(win->ascii, "%c", (USE_EBCDIC) ? EBCDIC[val] :
 			       (isprint(val) ? val : 46));
                         wmove(win->ascii, row, col);    
                         wrefresh(win->ascii);
 		    }
+		    byte_color_off((row * BASE) + col, val);
 		    wattrset(win->hex, A_NORMAL);
 		    wattrset(win->ascii, A_NORMAL);
-
-
 		}
 		break;
 
