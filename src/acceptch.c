@@ -55,7 +55,6 @@ int wacceptch(WINS *win, off_t len)
     short int key;					/* key capture        */
     WINDOW *Winds;					/* window pointer     */
     hexStack *stack;					/* used for stack     */
-    hexStack *tmpStack;					/* used for stack     */
     editHex = TRUE;					/* val for editing    */
 
     SIZE_CH	= FALSE;				/* set winch to false */
@@ -63,9 +62,9 @@ int wacceptch(WINS *win, off_t len)
     maxlines    = maxLines(len);			/* lines in file      */
     
     bool shouldExit = false;
+    bool savedpoint = TRUE;
 
-    /*createStack(stack);*/				/* init the stack     */
-    stack = NULL;
+    stack = NULL;				/* init the stack     */
     temp = (char *)calloc(81, sizeof(char));
 
     if (fpIN)						/* if file opened then*/
@@ -84,7 +83,6 @@ int wacceptch(WINS *win, off_t len)
         
 							/* get keys til exit  */
     while(!shouldExit)
-    //while (!(save=quitProgram(isEmptyStack(stack),(key = wgetch(Winds)))))
     {
         key = wgetch(Winds);
 	lastRow = row;
@@ -118,7 +116,7 @@ int wacceptch(WINS *win, off_t len)
 	case CTRL_AND('q'):
 	case CTRL_AND('x'):
 	case KEY_F(8):
-		if (isEmptyStack(stack))
+		if (saved)
 		{
 			/* No pending changes */
 			shouldExit = true;
@@ -246,13 +244,8 @@ int wacceptch(WINS *win, off_t len)
 			
 							/* edit list          */
 			head = insertItem(head, cl, val);
-		/* calloc() is used because it NULLS out all returned memory  */
-    			tmpStack = (hexStack *) calloc(1, sizeof(hexStack));
-			tmpStack->currentLoc = cl;
-			tmpStack->llist	     = head;
-			tmpStack->savedVal   = tmpval;
-			tmpStack->prev       = NULL;
-			pushStack(&stack, tmpStack);
+			pushStack(&stack, cl, tmpval);
+			set_saved(FALSE, Winds);
 		    }					/* continue to next
 							    case              */
 
@@ -430,13 +423,23 @@ int wacceptch(WINS *win, off_t len)
 			MIN_ADDR_LENGTH = getMinimumAddressLength(maxLoc(fpIN));
 			curVal = getLocVal(0);
                     }                
+	 	    set_saved(TRUE, Winds);
 	 	    return TRUE;			/* TRUE if worked     */
 		}
 		break;
 
 	case CTRL_AND('s'):				/* if F2 or ^s...     */
 	case KEY_F(2):					/* save the file      */
-		savefile(win);
+		if (savefile(win) == 0)
+		{
+			set_saved(TRUE, Winds);
+			if (stack != NULL && stack->savedVal != SAVEPOINT)
+			{
+				pushStack(&stack, -1, SAVEPOINT);
+				savedpoint = TRUE;
+			}
+			else if (stack == NULL) savedpoint = TRUE;
+		}
 		break;
 
 	case CTRL_AND('f'):
@@ -673,14 +676,32 @@ int wacceptch(WINS *win, off_t len)
 	case CTRL_AND('z'):				/* ^z undo last mod   */
 		getyx(Winds, row, col);
 
-							/* set previous loc   */
-		cl = (stack == NULL) ? cl : stack->currentLoc;
+		if (stack != NULL && stack->savedVal == SAVEPOINT)
+		{
+		    popStack(&stack);
+		    savedpoint = FALSE;
+		}
 		if (stack != NULL)
 		{
-
-		    /*if (stack != NULL) val = stack->savedVal;               */
+		    cl = stack->currentLoc;
 		    val = stack->savedVal;
 		    popStack(&stack);
+		                                   /* if there is a save point in */
+		                                   /* the next value of the stack */
+		    if (stack != NULL && stack->savedVal == SAVEPOINT)
+		    {
+		        if (savedpoint)       /* and if it's the last (controlled */
+		        {                     /* by savedpoint) go to saved mode */
+		            savedpoint = FALSE;
+		            set_saved(TRUE, Winds);
+		        }
+		        else set_saved(FALSE, Winds);
+		        popStack(&stack);
+		    }
+		    else if (stack == NULL && savedpoint)
+		              set_saved(TRUE, Winds);
+		         else set_saved(FALSE, Winds);
+
 		    head = deleteNode(head,cl);
 
 
