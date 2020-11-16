@@ -74,7 +74,6 @@ struct Stack {					/* struct to be used for stack*/
     int savedVal;
     off_t currentLoc;
     struct Stack *prev;
-    struct LinkedList *llist;
 };
 
 /* typedefs */
@@ -100,6 +99,7 @@ extern int  SIZE_CH;
 extern bool USE_EBCDIC;
 extern char EBCDIC[256];
 extern bool color_enabled;
+extern bool saved;
 
 /* macros */
 /*#define currentLoc(line, col) ((line) * BASE +((col)/3)) */
@@ -108,7 +108,6 @@ extern bool color_enabled;
 						/* cursor location in the file*/
 #define cursorLoc(line,col,editHex,b) (((line)*(b)) + ((col)/((editHex)?3:1)))
 #define llalloc() (struct LinkedList *) calloc(1, sizeof(struct LinkedList))
-#define isEmptyStack(stack) (((stack) == NULL) ? TRUE : FALSE)
 
 #define UNUSED(x) (void)(x)
 
@@ -119,6 +118,7 @@ extern bool color_enabled;
 #define MIN_COLS        70                      /* screen has to be 70< cols  */
 #define MIN_LINES       7     /* 8 - 1 */       /* the slk crap minuses 1 line*/
 #define KEY_TAB 		9			/* value for the tab key      */
+#define SAVEPOINT      -1
 
 #define AlphabetSize (UCHAR_MAX +1)		/* for portability            */
 
@@ -138,6 +138,7 @@ char *inputLine(WINDOW *win, int line, int col);
 /* file.c */
 void outline(FILE *fp, off_t linenum);
 off_t maxLoc(FILE *fp);
+void set_saved(bool sav, WINDOW *win);
 void print_usage();
 off_t maxLines(off_t len);
 int openfile(WINS *win);
@@ -181,8 +182,7 @@ void popupWin(char *msg, int time);
 short int questionWin(char *msg);
 
 /* stack.c */
-void createStack(hexStack *stack);
-void pushStack(hexStack **stack, hexStack *tmpStack);
+void pushStack(hexStack **stack, off_t cl, int val);
 void popStack(hexStack **stack);
 void smashDaStack(hexStack **stack);
 

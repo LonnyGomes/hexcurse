@@ -19,42 +19,28 @@
 #include "hex.h"
 
 /******************************************************\
- * Description: the just sets the stack pointer to    *
- * 		NULL; it really has no business being *
- *		function anyways		      *
-\******************************************************/
-void createStack(hexStack *stack)
-{
-    /* calloc() is used because it NULLS out all returned memory */
-    /* stack = (hexStack *) calloc(1, sizeof(hexStack));
-    stack->llist = NULL;
-    stack->prev = NULL;
-    */
-    stack = NULL;
-    stack->llist = NULL;
-    stack->prev = NULL;
-}
-
-/******************************************************\
  * Description: this pushes a structure of type       *
  *		hexStack to the stack.  NULL being the*
  *		initial state of the stack            *
 \******************************************************/
-void pushStack(hexStack **stack, hexStack *tmpStack)
+void pushStack(hexStack **stack, off_t cl, int val)
 {
-    hexStack *oldStack;
+    hexStack *oldStack, *newStack;
     oldStack = *stack;
 
+    /* calloc() is used because it NULLS out all returned memory  */
+    newStack = (hexStack *) calloc(1, sizeof(hexStack));
+    newStack->currentLoc = cl;
+    newStack->savedVal = val;
+
     if (oldStack == NULL)				/* begining of stack  */
-        *stack = tmpStack;
+        *stack = newStack;
     else 
     {
-        tmpStack->prev = oldStack;
-        *stack = tmpStack;
-
+        newStack->prev = oldStack;
+        *stack = newStack;
     }
 }
-
 
 /******************************************************\
  * Description: This function pops a structure off of *

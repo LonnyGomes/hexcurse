@@ -90,6 +90,31 @@ off_t maxLoc(FILE *fp)
     return(ftello(fp));				/* return val at EOF  */
 }
 
+/*******************************************************\
+ * Description: enters o exits from modified mode:     *
+ *      set or reset saved, and write or restore       *
+ *      mode indicator (*) at top of hex window        *
+\*******************************************************/
+void set_saved(bool sav, WINDOW *win)
+{
+    int y, x;
+
+    getyx(win, y, x);
+    if ( (saved = sav) )  /* set, not compare */
+    {
+        mvwaddch(windows->hex_outline, 0, MIN_ADDR_LENGTH+3, ACS_HLINE);
+        mvwaddch(windows->hex_outline, 0, MIN_ADDR_LENGTH+4, ACS_HLINE);
+        mvwaddch(windows->hex_outline, 0, MIN_ADDR_LENGTH+5, ACS_HLINE);
+        wnoutrefresh(windows->hex_outline);
+    }
+    else
+    {
+        mvwprintw(windows->hex_outline, 0, MIN_ADDR_LENGTH+3, " * ");
+        wnoutrefresh(windows->hex_outline);
+    }
+    wmove(win, y, x);
+}
+
 /******************************************************\
  * Description: prints out the command line help info *
  *		this function does not return anything*
