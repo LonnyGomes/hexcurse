@@ -102,14 +102,14 @@ void set_saved(bool sav, WINDOW *win)
     getyx(win, y, x);
     if ( (saved = sav) )  /* set, not compare */
     {
-        mvwaddch(windows->hex_outline, 0, 11, ACS_HLINE);
-        mvwaddch(windows->hex_outline, 0, 12, ACS_HLINE);
-        mvwaddch(windows->hex_outline, 0, 13, ACS_HLINE);
+        mvwaddch(windows->hex_outline, 0, MIN_ADDR_LENGTH+3, ACS_HLINE);
+        mvwaddch(windows->hex_outline, 0, MIN_ADDR_LENGTH+4, ACS_HLINE);
+        mvwaddch(windows->hex_outline, 0, MIN_ADDR_LENGTH+5, ACS_HLINE);
         wnoutrefresh(windows->hex_outline);
     }
     else
     {
-        mvwprintw(windows->hex_outline, 0, 11, " * ");
+        mvwprintw(windows->hex_outline, 0, MIN_ADDR_LENGTH+3, " * ");
         wnoutrefresh(windows->hex_outline);
     }
     wmove(win, y, x);
