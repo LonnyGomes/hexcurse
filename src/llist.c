@@ -109,16 +109,39 @@ int writeChanges()
     FILE *fpOUT = NULL;
     FILE *fptmp = NULL;
     
-    off_t buff,prev_loc;					/* declare llist vars */
+    off_t prev_loc;					/* declare llist vars */
     hexList *tmpHead = head;
+    int nread;
+    char *buff;
+    bool errfpOUT = FALSE;
 
-    if (fpOUTfilename && fpIN && (fpOUT = fopen(fpOUTfilename, "w+")))
+    if (fpOUTfilename && fpIN)
     {							/* open the write file*/
-	fptmp = fpOUT;
-        rewind(fpIN);					/* set file loc to 0  */
-	rewind(fpOUT);					
-	while ((buff = fgetc(fpIN)) != EOF)		/*write to file buffer*/
-		fputc(buff, fpOUT);
+	if ( (fpOUT = fopen(fpOUTfilename, "w+")) )
+	{
+		fptmp = fpOUT;
+		rewind(fpIN);				/* set file loc to 0  */
+		buff = malloc(FILEBUFF);		/* allocate buffer */
+		while (!feof(fpIN))
+		{			  /* copy original file to new one */
+			nread = fread(buff, 1, FILEBUFF, fpIN);
+			fwrite(buff, 1, nread, fpOUT);
+			if (ferror(fpOUT) || ferror(fpIN))
+			{
+				fclose(fpOUT);
+				remove(fpOUTfilename);
+				errfpOUT = TRUE;
+				break;
+			}
+		}
+		free(buff);
+	}
+	else errfpOUT = TRUE;
+	if (errfpOUT)
+	{
+		popupWin("Error writing to file", -1);
+		return 1;
+	}
     }
     else if (fpIN)				/* if no output file  */
     {

@@ -119,6 +119,7 @@ extern bool color_enabled;
 #define MIN_COLS        70                      /* screen has to be 70< cols  */
 #define MIN_LINES       7     /* 8 - 1 */       /* the slk crap minuses 1 line*/
 #define KEY_TAB 		9			/* value for the tab key      */
+#define FILEBUFF    16384			/* buffer size to copy file */
 
 #define AlphabetSize (UCHAR_MAX +1)		/* for portability            */
 
