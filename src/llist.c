@@ -135,6 +135,12 @@ int writeChanges()
 			}
 		}
 		free(buff);
+		rewind(fptmp);
+		fclose(fpIN);
+		free(fpINfilename);
+		fpINfilename = strdup(fpOUTfilename);
+		free(fpOUTfilename);
+		fpOUTfilename = NULL;
 	}
 	else errfpOUT = TRUE;
 	if (errfpOUT)
@@ -145,16 +151,13 @@ int writeChanges()
     }
     else if (fpIN)				/* if no output file  */
     {
-	fptmp = fpIN;
-	fpIN = fopen(fpINfilename, "r+");
-	if (!fpIN)
+	fptmp = fopen(fpINfilename, "r+");
+	if (!fptmp)
 	{
-		fpIN = fptmp;
 		popupWin("Cannot write to file: bad permissions", -1);
 		return 1;
 	}
-	fclose(fptmp);
-	fptmp = fpIN;
+	fclose(fpIN);
     }
     else
     {
@@ -162,8 +165,6 @@ int writeChanges()
 	return 1;
     }
     
-    rewind(fpIN);
-    rewind(fptmp);
     prev_loc = -1;
     while (tmpHead != NULL)		/* write to file      */
     {
@@ -175,13 +176,14 @@ int writeChanges()
 	prev_loc = tmpHead->loc;
 	tmpHead = tmpHead->next;
     }
-
-    fflush(fptmp);					/* flush buffto disk  */
-    
-    rewind(fpIN);					/* reset file pointer */
-    if (fpIN != fptmp)
+    if ( (fpIN = fopen(fpINfilename, "r")) )   /* reopen file readonly */
 	fclose(fptmp);
-
+    else
+    {
+	fpIN = fptmp;       /* if not possible, keep it readwrite */
+	fflush(fpIN);
+	rewind(fpIN);
+    }
     return 0;
 
 } 
