@@ -111,7 +111,7 @@ int writeChanges()
     
     off_t prev_loc;					/* declare llist vars */
     hexList *tmpHead = head;
-    int nread;
+    int nread, fs, fp, errfile = 0;
     char *buff;
     bool errfpOUT = FALSE;
 
@@ -170,8 +170,14 @@ int writeChanges()
     {
 	/* only print the latest change  from the linked list*/
 	if (prev_loc != tmpHead->loc) { 
-		fseeko(fptmp, tmpHead->loc, SEEK_SET);
-		fputc(tmpHead->val, fptmp);
+		fs = fseeko(fptmp, tmpHead->loc, SEEK_SET);
+		fp = fputc(tmpHead->val, fptmp);
+		if (fs != 0 || fp == EOF)
+		{
+			popupWin("Error writing to file", -1);
+			errfile = 1;
+			break;
+		}
 	}
 	prev_loc = tmpHead->loc;
 	tmpHead = tmpHead->next;
@@ -184,8 +190,7 @@ int writeChanges()
 	fflush(fpIN);
 	rewind(fpIN);
     }
-    return 0;
-
+    return errfile;
 } 
 
 /********************************************************\
