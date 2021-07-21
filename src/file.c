@@ -225,6 +225,7 @@ int savefile(WINS *win)
 	}
 	
 	/*write to file       */
+	popupWin("Saving file...", -2);
 	if (!writeChanges())
 	    popupWin("The file has been saved.", -1);
 	else

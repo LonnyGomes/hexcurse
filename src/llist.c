@@ -109,29 +109,55 @@ int writeChanges()
     FILE *fpOUT = NULL;
     FILE *fptmp = NULL;
     
-    off_t buff,prev_loc;					/* declare llist vars */
+    off_t prev_loc;					/* declare llist vars */
     hexList *tmpHead = head;
+    int nread, fs, fp, errfile = 0;
+    char *buff;
+    bool errfpOUT = FALSE;
 
-    if (fpOUTfilename && fpIN && (fpOUT = fopen(fpOUTfilename, "w+")))
+    if (fpOUTfilename && fpIN)
     {							/* open the write file*/
-	fptmp = fpOUT;
-        rewind(fpIN);					/* set file loc to 0  */
-	rewind(fpOUT);					
-	while ((buff = fgetc(fpIN)) != EOF)		/*write to file buffer*/
-		fputc(buff, fpOUT);
+	if ( (fpOUT = fopen(fpOUTfilename, "w+")) )
+	{
+		fptmp = fpOUT;
+		rewind(fpIN);				/* set file loc to 0  */
+		buff = malloc(FILEBUFF);		/* allocate buffer */
+		while (!feof(fpIN))
+		{			  /* copy original file to new one */
+			nread = fread(buff, 1, FILEBUFF, fpIN);
+			fwrite(buff, 1, nread, fpOUT);
+			if (ferror(fpOUT) || ferror(fpIN))
+			{
+				fclose(fpOUT);
+				remove(fpOUTfilename);
+				errfpOUT = TRUE;
+				break;
+			}
+		}
+		free(buff);
+		rewind(fptmp);
+		fclose(fpIN);
+		free(fpINfilename);
+		fpINfilename = strdup(fpOUTfilename);
+		free(fpOUTfilename);
+		fpOUTfilename = NULL;
+	}
+	else errfpOUT = TRUE;
+	if (errfpOUT)
+	{
+		popupWin("Error writing to file", -1);
+		return 1;
+	}
     }
     else if (fpIN)				/* if no output file  */
     {
-	fptmp = fpIN;
-	fpIN = fopen(fpINfilename, "r+");
-	if (!fpIN)
+	fptmp = fopen(fpINfilename, "r+");
+	if (!fptmp)
 	{
-		fpIN = fptmp;
 		popupWin("Cannot write to file: bad permissions", -1);
 		return 1;
 	}
-	fclose(fptmp);
-	fptmp = fpIN;
+	fclose(fpIN);
     }
     else
     {
@@ -139,28 +165,32 @@ int writeChanges()
 	return 1;
     }
     
-    rewind(fpIN);
-    rewind(fptmp);
     prev_loc = -1;
     while (tmpHead != NULL)		/* write to file      */
     {
 	/* only print the latest change  from the linked list*/
 	if (prev_loc != tmpHead->loc) { 
-		fseeko(fptmp, tmpHead->loc, SEEK_SET);
-		fputc(tmpHead->val, fptmp);
+		fs = fseeko(fptmp, tmpHead->loc, SEEK_SET);
+		fp = fputc(tmpHead->val, fptmp);
+		if (fs != 0 || fp == EOF)
+		{
+			popupWin("Error writing to file", -1);
+			errfile = 1;
+			break;
+		}
 	}
 	prev_loc = tmpHead->loc;
 	tmpHead = tmpHead->next;
     }
-
-    fflush(fptmp);					/* flush buffto disk  */
-    
-    rewind(fpIN);					/* reset file pointer */
-    if (fpIN != fptmp)
+    if ( (fpIN = fopen(fpINfilename, "r")) )   /* reopen file readonly */
 	fclose(fptmp);
-
-    return 0;
-
+    else
+    {
+	fpIN = fptmp;       /* if not possible, keep it readwrite */
+	fflush(fpIN);
+	rewind(fpIN);
+    }
+    return errfile;
 } 
 
 /********************************************************\

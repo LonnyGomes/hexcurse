@@ -457,7 +457,9 @@ void popupWin(char *msg, int time)
 
     if (time == -1)
         wgetch(tmpwin);
-    else
+    else if (time == -2)      /* just print the popup and leave it there */
+        return;               /* when work finished, you should call */
+    else                      /* another popup to inform and restore */
         sleep(time);					/* wait               */
 
     delwin(tmpwin);
