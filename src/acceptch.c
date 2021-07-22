@@ -541,7 +541,13 @@ int wacceptch(WINS *win, off_t len)
                     restoreBorder(win);			/* restore border     */
 		    wrefresh(win->hex_outline);
 		}
-		else 
+		else if (gotoLoc == -2)
+		{
+		    popupWin("Search canceled!", -1);
+                    restoreBorder(win);			/* restore border     */
+		    wrefresh(win->hex_outline);
+		}
+		else
 		{
                     getyx(Winds, row, col);
 							/* goto found loc     */

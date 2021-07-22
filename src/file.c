@@ -307,7 +307,7 @@ void make_delta2(int *delta2, int *pat, size_t patlen) {
 \********************************************************/
 off_t hexSearchBM(WINDOW *w, FILE *fp, int pat[], off_t startfp, int patlen)
 {
-    if (! (pat && patlen > 0)) return -1;
+    if (! (pat && patlen > 0)) return -2;
 
     int         i, m = 1;
     int         j = patlen - 1;
@@ -383,8 +383,10 @@ off_t hexSearchBM(WINDOW *w, FILE *fp, int pat[], off_t startfp, int patlen)
         memmove(buf, &buf[full_length - rem_bytes], rem_bytes);
         pos1 = pos2 - rem_bytes;
         
-        if (wgetch(w) == 27) // escape
+        if (wgetch(w) == 27) { // escape
+            rv = -2;
             goto end;
+        }
             
         if (pos_max > 0) {
             cur_percent = (int) ((pos2 * 100) / pos_max);
