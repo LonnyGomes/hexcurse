@@ -241,6 +241,174 @@ int savefile(WINS *win)
     return exitCode;
 }
 
+#define ALPHABET_LEN    256
+#define BUF_L           8192
+ 
+void make_delta1(int *delta1, int *pat, size_t patlen) {
+    size_t i;
+    for (i=0; i < ALPHABET_LEN; i++) {
+        delta1[i] = patlen;
+    }
+    for (i=0; i < patlen-1; i++) {
+        delta1[pat[i]] = patlen-1 - i;
+    }
+}
+ 
+// true if the suffix of word starting from word[pos] is a prefix 
+// of word
+int is_prefix(int *word, size_t wordlen, size_t pos) {
+    size_t i;
+    size_t suffixlen = wordlen - pos;
+
+    for (i = 0; i < suffixlen; i++) {
+        if (word[i] != word[pos+i]) {
+            return 0;
+        }
+    }
+    return 1;
+}
+ 
+// length of the longest suffix of word ending on word[pos].
+// suffix_length("dddbcabc", 8, 4) = 2
+size_t suffix_length(int *word, size_t wordlen, size_t pos) {
+    size_t i;
+    // increment suffix length i to the first mismatch or beginning
+    // of the word
+    for (i = 0; (word[pos-i] == word[wordlen-1-i]) && (i < pos); i++);
+    return i;
+}
+
+void make_delta2(int *delta2, int *pat, size_t patlen) {
+    size_t  p;
+    size_t  last_prefix_index = patlen-1;
+ 
+    // first loop
+    for (p=patlen-1; ;p--) {
+        if (is_prefix(pat, patlen, p+1)) {
+            last_prefix_index = p+1;
+        }
+        delta2[p] = (int) (last_prefix_index + (patlen-1 - p));
+        if (p == 0) break;
+    }
+ 
+    // second loop
+    for (p=0; p < patlen-1; p++) {
+        int slen = suffix_length(pat, patlen, p);
+        if (pat[p - slen] != pat[patlen-1 - slen]) {
+            delta2[patlen-1 - slen] = (int) (patlen-1 - p + slen);
+        }
+    }
+}
+
+/********************************************************\
+ * Description: searches for a series of either hex or  *
+ *		ascii values of upto 16 bytes long.  The*
+ *		function returns the next location of   *
+ *		the specified string or -1 if not found *
+ *      algorithm based on the wikipedia example *
+ * http://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm *
+\********************************************************/
+off_t hexSearchBM(WINDOW *w, FILE *fp, int pat[], off_t startfp, int patlen)
+{
+    if (! (pat && patlen > 0)) return -1;
+
+    int         i, m = 1;
+    int         j = patlen - 1;
+    int         delta1 [ ALPHABET_LEN ];
+    int         *delta2 = (int *)malloc(patlen * sizeof(int));
+
+    char        *buf;           // circular buffer
+    char        *patt = (char *) malloc(patlen);
+
+    int         n;              // number of bytes read by fread()
+    int         rem_bytes = 0;  // remaining bytes in the buffer
+    int         bytes_to_read = BUF_L;
+    int         full_length;    // full length of the current buffer
+    int         cur_percent, last_percent = -1;
+    
+    off_t       pos1, pos2;     // lower and upper limit of the buffer
+    off_t       pos_max = -1;   // EOF position
+    off_t       rv = -1;        // return value: default = -1
+    
+    if (posix_memalign((void **)&buf, getpagesize(), BUF_L) != 0)
+        return -1;
+
+    if (! (delta2 && patt)) return -1;
+    
+    make_delta1(delta1, pat, patlen);
+    make_delta2(delta2, pat, patlen);
+    // converting int to (unsigned char) -> (unsigned char) is faster
+    for (i = 0; i < patlen; i++) patt[i] = (unsigned char) pat[i];
+
+    // get the pos_max
+    if (fseeko(fp, 0, SEEK_END) == 0) pos_max = ftello(fp);
+    
+    // we ignore the current byte
+    startfp++;
+    if (fseeko(fp, startfp, SEEK_SET) != 0) {
+        goto end;
+    }
+
+    // set to non-blocking
+    wtimeout(w, 0);
+    pos1 = pos2 = startfp;
+
+    while (1) {
+        n = (int) fread(&buf[rem_bytes], 1, bytes_to_read, fp);
+        full_length = n + rem_bytes;
+        if (n == 0 || full_length < patlen) break;
+        pos2 = pos1 + (off_t) full_length;
+
+        // apply changes by user, if any
+        updateBuf(head, buf, pos1, pos2);
+
+        i = patlen - 1;
+        while (i < full_length) {
+            j = patlen - 1;
+            while (j >= 0 && (buf[i] == patt[j])) {
+                --i;
+                --j;
+            }
+            if (j < 0) {
+                // success
+                rv = pos1 + i + 1;
+                goto end;
+            }
+
+            m = max(delta1[(unsigned char) buf[i]], delta2[j]);
+            i += m;
+        }
+
+        rem_bytes = full_length + m - i - 1;
+        if (rem_bytes > full_length) rem_bytes = full_length;
+        
+        bytes_to_read = BUF_L - rem_bytes;
+        memmove(buf, &buf[full_length - rem_bytes], rem_bytes);
+        pos1 = pos2 - rem_bytes;
+        
+        if (wgetch(w) == 27) // escape
+            goto end;
+            
+        if (pos_max > 0) {
+            cur_percent = (int) ((pos2 * 100) / pos_max);
+            if (cur_percent != last_percent) {
+                mvwprintw(w, LINES - 1, 1, "Searching (hit Esc to cancel) ...%d%%", cur_percent);
+                wrefresh(w);
+                last_percent = cur_percent;
+            }
+        }
+    }
+
+    end:
+        // set back to blocking
+        wtimeout(w, -1);
+        free(buf);
+        free(patt);
+        free(delta2);
+
+    return rv;
+}
+
 /********************************************************\
  * Description: searches for a series of either hex or  *
  *		ascii values of upto 16 bytes long.  The*
