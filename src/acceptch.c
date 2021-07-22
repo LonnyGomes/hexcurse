@@ -453,13 +453,6 @@ int wacceptch(WINS *win, off_t len)
                     break;
                 }
 
-        if (temp && *temp && key == KEY_F(5))
-        {
-            // if F5 was pressed, and we already have a search string,
-            //  don't ask for user input
-            ;
-        } else { 
-
 		if (temp != NULL)
 		{
 		    bzero(SearchStr, 13);
@@ -507,8 +500,7 @@ int wacceptch(WINS *win, off_t len)
 		    strncpy(temp, tmpstr, (strlen(tmpstr) > 80) 
 			    ? 80 : strlen(tmpstr));
 		}
-        }
-        
+
 		val = 0;
 							/* parse out input    */
 	        for (count = 0; temp[count] != 0 && count < 80; count++)
