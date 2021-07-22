@@ -240,9 +240,6 @@ int savefile(WINS *win)
     wnoutrefresh(win->hex_outline);
     return exitCode;
 }
-
-#define ALPHABET_LEN    256
-#define BUF_L           8192
  
 void make_delta1(int *delta1, int *pat, size_t patlen) {
     size_t i;

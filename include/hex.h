@@ -119,6 +119,8 @@ extern bool color_enabled;
 #define MIN_COLS        70                      /* screen has to be 70< cols  */
 #define MIN_LINES       7     /* 8 - 1 */       /* the slk crap minuses 1 line*/
 #define KEY_TAB 		9			/* value for the tab key      */
+#define ALPHABET_LEN    256         /* for hexSearchBM */
+#define BUF_L           8192        /* for hexSearchBM */
 
 #define AlphabetSize (UCHAR_MAX +1)		/* for portability            */
 
@@ -142,6 +144,7 @@ void print_usage();
 off_t maxLines(off_t len);
 int openfile(WINS *win);
 int savefile(WINS *win);
+off_t hexSearchBM(WINDOW *w, FILE *fp, int pat[], off_t startfp, int patlen);
 off_t hexSearch(FILE *fp, int ch[], off_t startfp, int length);
 off_t gotoLine(FILE *fp, off_t currLoc, off_t gotoLoc, off_t maxlines,  WINDOW *windows);
 int getLocVal(off_t loc);
@@ -160,6 +163,7 @@ RETSIGTYPE catchSegfault(int sig);
 hexList *deleteNode(hexList *head, off_t loc);
 hexList *insertItem(hexList *head, off_t loc, int val);
 int searchList(hexList *head, off_t loc);
+void updateBuf(hexList *head, char *buf, off_t pos1, off_t pos2);
 int writeChanges();
 hexList *freeList(hexList *head);
 
