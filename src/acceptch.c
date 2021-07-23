@@ -49,6 +49,8 @@ int wacceptch(WINS *win, off_t len)
 
     char *gotoLocStr,					/* convert to gotoLoc */
          *temp,
+         *searchhex,
+         *searchascii,
     	 *tmpstr,					/* tmp str 4 inputLine*/
 	 SearchStr[13];
 
@@ -66,7 +68,8 @@ int wacceptch(WINS *win, off_t len)
 
     /*createStack(stack);*/				/* init the stack     */
     stack = NULL;
-    temp = (char *)calloc(81, sizeof(char));
+    searchhex = (char *)calloc(81, sizeof(char));
+    searchascii = (char *)calloc(81, sizeof(char));
 
     if (fpIN)						/* if file opened then*/
     {							/* highlight 0,0 loc  */
@@ -453,6 +456,8 @@ int wacceptch(WINS *win, off_t len)
                     break;
                 }
 
+		temp = editHex ? searchhex : searchascii;
+
 		if (temp != NULL)
 		{
 		    bzero(SearchStr, 13);
@@ -811,7 +816,8 @@ int wacceptch(WINS *win, off_t len)
 	doupdate();					/* update visual      */
     }
 
-    free(temp);
+    free(searchhex);
+    free(searchascii);
     while (stack != NULL)
 	popStack(&stack);
     
