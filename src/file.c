@@ -240,7 +240,7 @@ int savefile(WINS *win)
     wnoutrefresh(win->hex_outline);
     return exitCode;
 }
- 
+
 void make_delta1(int *delta1, int *pat, size_t patlen) {
     size_t i;
     for (i=0; i < ALPHABET_LEN; i++) {
@@ -250,8 +250,8 @@ void make_delta1(int *delta1, int *pat, size_t patlen) {
         delta1[pat[i]] = patlen-1 - i;
     }
 }
- 
-// true if the suffix of word starting from word[pos] is a prefix 
+
+// true if the suffix of word starting from word[pos] is a prefix
 // of word
 int is_prefix(int *word, size_t wordlen, size_t pos) {
     size_t i;
@@ -264,7 +264,7 @@ int is_prefix(int *word, size_t wordlen, size_t pos) {
     }
     return 1;
 }
- 
+
 // length of the longest suffix of word ending on word[pos].
 // suffix_length("dddbcabc", 8, 4) = 2
 size_t suffix_length(int *word, size_t wordlen, size_t pos) {
@@ -278,7 +278,7 @@ size_t suffix_length(int *word, size_t wordlen, size_t pos) {
 void make_delta2(int *delta2, int *pat, size_t patlen) {
     size_t  p;
     size_t  last_prefix_index = patlen-1;
- 
+
     // first loop
     for (p=patlen-1; ;p--) {
         if (is_prefix(pat, patlen, p+1)) {
@@ -287,7 +287,7 @@ void make_delta2(int *delta2, int *pat, size_t patlen) {
         delta2[p] = (int) (last_prefix_index + (patlen-1 - p));
         if (p == 0) break;
     }
- 
+
     // second loop
     for (p=0; p < patlen-1; p++) {
         int slen = suffix_length(pat, patlen, p);
@@ -322,16 +322,16 @@ off_t hexSearchBM(WINDOW *w, FILE *fp, int pat[], off_t startfp, int patlen)
     int         bytes_to_read = BUF_L;
     int         full_length;    // full length of the current buffer
     int         cur_percent, last_percent = -1;
-    
+
     off_t       pos1, pos2;     // lower and upper limit of the buffer
     off_t       pos_max = -1;   // EOF position
     off_t       rv = -1;        // return value: default = -1
-    
+
     if (posix_memalign((void **)&buf, getpagesize(), BUF_L) != 0)
         return -1;
 
     if (! (delta2 && patt)) return -1;
-    
+
     make_delta1(delta1, pat, patlen);
     make_delta2(delta2, pat, patlen);
     // converting int to (unsigned char) -> (unsigned char) is faster
@@ -339,7 +339,7 @@ off_t hexSearchBM(WINDOW *w, FILE *fp, int pat[], off_t startfp, int patlen)
 
     // get the pos_max
     if (fseeko(fp, 0, SEEK_END) == 0) pos_max = ftello(fp);
-    
+
     // we ignore the current byte
     startfp++;
     if (fseeko(fp, startfp, SEEK_SET) != 0) {
@@ -378,16 +378,16 @@ off_t hexSearchBM(WINDOW *w, FILE *fp, int pat[], off_t startfp, int patlen)
 
         rem_bytes = full_length + m - i - 1;
         if (rem_bytes > full_length) rem_bytes = full_length;
-        
+
         bytes_to_read = BUF_L - rem_bytes;
         memmove(buf, &buf[full_length - rem_bytes], rem_bytes);
         pos1 = pos2 - rem_bytes;
-        
+
         if (wgetch(w) == 27) { // escape
             rv = -2;
             goto end;
         }
-            
+
         if (pos_max > 0) {
             cur_percent = (int) ((pos2 * 100) / pos_max);
             if (cur_percent != last_percent) {

@@ -741,7 +741,7 @@ int wacceptch(WINS *win, off_t len)
 
 		}
 		break;
-        
+
 #ifdef DEBUG_LLIST
 	case CTRL_AND('x'):
 	    printDebug(head, -1);
