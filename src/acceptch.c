@@ -530,8 +530,6 @@ int wacceptch(WINS *win, off_t len)
         gotoLoc = -1;
 		if (val != -1)				/* if val checks out  */
 							/* search for it      */
-		    //val = hexSearch(fpIN, ch, cursorLoc(currentLine, col,
-			  //editHex, BASE), (editHex) ? ((count+1)/2) : count);
             gotoLoc = hexSearchBM(win->hex_outline, fpIN, ch, (off_t) cursorLoc(currentLine, col,
 			  editHex, BASE), (int) (editHex) ? ((count+1)/2) : count);
 

@@ -409,68 +409,6 @@ off_t hexSearchBM(WINDOW *w, FILE *fp, int pat[], off_t startfp, int patlen)
 }
 
 /********************************************************\
- * Description: searches for a series of either hex or  *
- *		ascii values of upto 16 bytes long.  The*
- *		function returns the next location of   *
- *		the specified string or -1 if not found *
-\********************************************************/
-off_t hexSearch(FILE *fp, int ch[], off_t startfp, int length)
-{
-    int loop, tmp, c, flag=0;
-    off_t currLoc, startLoc, foundLoc=-1;		/* init vars          */
-
-    fseeko(fp, startfp, SEEK_SET);			/* begin from loc     */
-
-    c = getc(fp);					/* get char from file */
-    currLoc = ftello(fp);				/* get location       */
-    if ((tmp = searchList(head, currLoc-1)) != -1)	/* check for val in ll*/
-	c = tmp;
-
-    while (currLoc != startfp) 				/* while not back to  */
-    {							/* beginning...       */
-	if (c == ch[0]) 				/* if char we want... */
-	{						
-	    startLoc = ftello(fp);			/* get location       */
-							/* loop to find rest  */
-	    for (loop = 1; (loop < length) && (c != EOF); loop++)
-	    {
-		c = fgetc(fp); 
-    		currLoc = ftello(fp);
-    		if ((tmp = searchList(head, currLoc-1)) != -1)
-		    c = tmp;
-		if (c != ch[loop])
-		    break;
-		    
-	    }
-		fseeko(fp, startLoc, SEEK_SET);
-
-	    if ((loop == length) && (flag))		/* if found it        */
-		return startLoc - 1;			/* return location    */
-	    else if (loop == length)
-		foundLoc = startLoc -1;			/* return if no others*/
-		    	
-	}
-	flag = 1;    /* if cursor is on the search string, continue searching */
-		
-
-	if (c == EOF)					/* if EOF rewind      */
-	    rewind(fp);
-
-        currLoc = ftello(fp);				/* current location   */
-
-	if (currLoc != startfp) 			/* if not at start... */
-	{
-	    c = fgetc(fp);				/* get another char   */
-    	    currLoc = ftello(fp);
-    	    if ((tmp = searchList(head, currLoc-1)) != -1)
-	        c = tmp;
-	}
-    } 
-
-    return foundLoc;					/* return not found   */
-}
-
-/********************************************************\
  * Description: goes to a certain location in the file  *
  * Returns:     currentLine (in file)                   *
 \********************************************************/

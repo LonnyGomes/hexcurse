@@ -145,7 +145,6 @@ off_t maxLines(off_t len);
 int openfile(WINS *win);
 int savefile(WINS *win);
 off_t hexSearchBM(WINDOW *w, FILE *fp, int pat[], off_t startfp, int patlen);
-off_t hexSearch(FILE *fp, int ch[], off_t startfp, int length);
 off_t gotoLine(FILE *fp, off_t currLoc, off_t gotoLoc, off_t maxlines,  WINDOW *windows);
 int getLocVal(off_t loc);
 bool inHexList(off_t loc);
