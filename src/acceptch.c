@@ -505,7 +505,13 @@ int wacceptch(WINS *win, off_t len)
 		{					/* don't change temp  */
 		    bzero(temp, 81);
 		    if (strlen(tmpstr) > 80)
+		    {
 			strncpy(temp, tmpstr, 80);
+
+			popupWin("Warning: search value truncated to the maximum 80 bytes", -1);
+			restoreBorder(win);			/* restore border     */
+			wrefresh(win->hex_outline);
+		    }
 		    else
 			strcpy(temp, tmpstr);
 		}
