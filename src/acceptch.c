@@ -39,7 +39,8 @@ int wacceptch(WINS *win, off_t len)
 	 eol = (BASE * 3) - 1,				/* end of line pos    */
 	 lastRow = 0, lastCol = 0,			/* last row/col coords*/
 	 curVal = 0,	        			/* vals @ cursor locs */
-	 tmp = 0;
+	 tmp = 0,
+	 templen = 0;
 
     off_t cl,						/* current loc in file*/
 	  gotoLoc = 0,					/* goto location      */
@@ -462,8 +463,9 @@ int wacceptch(WINS *win, off_t len)
 		{
 		    bzero(SearchStr, 13);
 		    strcat(SearchStr, "(");
-		    if (strlen(temp) <= 10)
-			strncat(SearchStr, temp, strlen(temp));
+		    templen = strlen(temp);
+		    if (templen <= 10)
+			strcat(SearchStr, temp);
 		    else
 		    {
 			strncat(SearchStr, temp, 7);
@@ -483,7 +485,7 @@ int wacceptch(WINS *win, off_t len)
 		/* the third parameter positions the cursor in the correct loc*/
 		tmpstr = inputLine(win->hex_outline, LINES - 1, 
 			 ((editHex) ? 21 : 23) + 
-			 ((strlen(temp) > 10) ? 10 : strlen(temp)));
+			 ((templen > 10) ? 10 : templen));
 		noecho();
 
 		wmove(win->hex_outline, LINES - 1, 1);
@@ -502,8 +504,10 @@ int wacceptch(WINS *win, off_t len)
 		if (tmpstr[0] != '\0' )			/* enter was hit so   */
 		{					/* don't change temp  */
 		    bzero(temp, 81);
-		    strncpy(temp, tmpstr, (strlen(tmpstr) > 80) 
-			    ? 80 : strlen(tmpstr));
+		    if (strlen(tmpstr) > 80)
+			strncpy(temp, tmpstr, 80);
+		    else
+			strcpy(temp, tmpstr);
 		}
 
 		val = 0;
