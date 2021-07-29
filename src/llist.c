@@ -101,6 +101,30 @@ int searchList(hexList *head, off_t loc)
 }
 
 /********************************************************\
+ * Description: Search through the linked list to     *
+ *		find if there are values for locations        *
+ *		between pos1 and pos2. If there are, changes  *
+ *		the corresponding values inside the buffer    *
+\********************************************************/
+void updateBuf(hexList *head, char *buf, off_t pos1, off_t pos2)
+{
+    hexList *tmpHead;					/* allocate temp space*/
+    off_t   prev_loc = -1;
+
+    tmpHead = head;					/* temp points to head*/
+    while (tmpHead != NULL)				/* while not null     */
+    {
+        if (prev_loc != tmpHead->loc && tmpHead->loc >= pos1 && tmpHead->loc < pos2)
+        {
+            buf[tmpHead->loc - pos1] = (unsigned char) tmpHead->val;
+        }
+        prev_loc = tmpHead->loc;
+        tmpHead = tmpHead->next;	/* move to next item  */
+    }
+
+}
+
+/********************************************************\
  * Description: write the changes to either the current *
  *		file or to a specified output file	*
 \*******************************************************/

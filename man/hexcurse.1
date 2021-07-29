@@ -64,7 +64,7 @@ Opens a file.
 Goto a certain location in the current file.  Depending on which way the addresses are being viewed at the moment, the search will behave differently.  If the addresses are currently in hex format, the search will search as if the input was given in hexadecimal format.  If the addresses are in decimal format, the function will search for the address in decimal.
 .TP 15
 .B F5 | ctrl+f
-Search for a certain string in the current file.  Depending on which window the user is currently editing in, this search will behave differently.  If editing in the hex window, the input should only be in hexadecimal, and it will search for the hexadecimal "string."  If the current editing window is the ASCII window, the input should be ASCII characters, and the search will find that ASCII string in the file.
+Search for a certain string in the current file starting at the next position to the cursor.  Depending on which window the user is currently editing in, this search will behave differently.  If editing in the hex window, the input should only be in hexadecimal, and it will search for the hexadecimal "string".  If the current editing window is the ASCII window, the input should be ASCII characters, and the search will find that ASCII string in the file.  The search string is limited to 80 bytes.
 .TP 15
 .B F6 | ctrl+a
 Switch between hexadecimal address values and decimal address values.
