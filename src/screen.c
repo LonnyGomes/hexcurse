@@ -451,7 +451,7 @@ void popupWin(char *msg, int time)
 
     keypad(tmpwin, TRUE);
 
-    mvwprintw(tmpwin,2,3, msg);				/* output mesg        */
+    mvwprintw(tmpwin,2,3, "%s", msg);			/* output mesg        */
     wmove(tmpwin,2,len+4);
     wrefresh(tmpwin);
 
@@ -492,7 +492,7 @@ short int questionWin(char *msg)
 
     tmpwin = drawbox(y, x, 5, len + 6);			/* create window      */
 
-    mvwprintw(tmpwin,2,3, msg);
+    mvwprintw(tmpwin,2,3, "%s", msg);
     wmove(tmpwin,2,len+4);
     wrefresh(tmpwin);
 
